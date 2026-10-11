@@ -94,7 +94,7 @@ Bishesh's voice: concise, plain statements. At most two em dashes on the whole s
 
 ## Decisions (2026-10-11)
 Bishesh: "this can all be found in the CV". Check his own documents before asking. Sources beyond cv.pdf: `content/source/research-statement.docx` (11 Oct 2026).
-- B1 no headshot (none supplied). B2 LinkedIn (CV) and GitHub links shown.
+- B1 headshot: `src/assets/headshot.jpg`, Bishesh's photo from the FloodHUB credits (`frontend/src/assets/team/team-bishesh.jpg`), added at his request 2026-10-11. The only personal photo allowed on the site. B2 LinkedIn (CV) and GitHub links shown.
 - C1 Bagmati venue: Environmental Development (Elsevier), under review, first author (CV + statement).
 - C3 final year project = Bagmati = Sept 2024 thesis: one page (bagmati-evacuation), thesis as origin, UNOSAT swipe as validation panel.
 - C4 AGU abstract (Kathmandu Valley GRU surrogate) is the earlier work; Hanumante applies the approach (statement). Numbers stay separate. No role claim on Hanumante.

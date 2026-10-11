@@ -3,6 +3,8 @@ import Base from '../layouts/Base.astro';
 import RainRiver from '../components/figures/RainRiver.astro';
 import Email from '../components/Email.astro';
 import { getCollection, getEntry } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import headshot from '../assets/headshot.jpg';
 
 const me = (await getEntry('profile', 'me'))!.data;
 const featured = (await getCollection('projects', (p) => p.data.featured && p.data.visibility === 'public'))
@@ -10,6 +12,7 @@ const featured = (await getCollection('projects', (p) => p.data.featured && p.da
   .slice(0, 3);
 const interests = (await getCollection('interests')).sort((a, b) => a.data.order - b.data.order);
 
+const photo = await getImage({ src: headshot, width: 400, height: 400, format: 'jpg' });
 const person = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -20,6 +23,7 @@ const person = {
   alumniOf: { '@type': 'CollegeOrUniversity', name: 'Tribhuvan University, IOE Thapathali Campus' },
   knowsAbout: interests.map((i) => i.data.label),
   sameAs: me.links.map((l) => l.href),
+  image: new URL(photo.src, Astro.site).href,
 };
 ---
 
@@ -27,6 +31,7 @@ const person = {
   <section class="hero-scroll" data-hero-scroll aria-labelledby="hero-title">
     <div class="hero-sticky mx-auto grid max-w-page items-center gap-x-12 gap-y-10 px-4 sm:px-8 lg:grid-cols-12">
       <div class="lg:col-span-5">
+        <Image src={headshot} alt={`Portrait of ${me.name}`} width={112} height={112} loading="eager" class="hero-photo" />
         <p class="eyebrow">{me.location}</p>
         <h1 id="hero-title" class="hero-title">{me.name}</h1>
         <p class="hero-role">{me.role}</p>
@@ -75,6 +80,18 @@ const person = {
     padding-block: 2rem;
   }
 
+  .hero-photo {
+    display: block;
+    width: 112px;
+    height: 112px;
+    margin-bottom: 1.5rem;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    object-position: 50% 30%;
+    outline: 1px solid var(--c-rule);
+    outline-offset: 3px;
+  }
+  @media (max-width: 639px) { .hero-photo { width: 88px; height: 88px; } }
   .eyebrow {
     font-family: var(--font-jbmono);
     font-size: var(--text-xs);

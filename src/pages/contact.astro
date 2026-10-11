@@ -2,13 +2,20 @@
 import Base from '../layouts/Base.astro';
 import Email from '../components/Email.astro';
 import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import headshot from '../assets/headshot.jpg';
 const me = (await getEntry('profile', 'me'))!.data;
 ---
 
 <Base title="Contact" description={`How to reach ${me.name}.`}>
   <article class="mx-auto max-w-page px-4 pt-14 sm:px-8">
-    <p class="eyebrow">Contact</p>
-    <h1>Email is the best way to reach me.</h1>
+    <div class="contact-head">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h1>Email is the best way to reach me.</h1>
+      </div>
+      <Image src={headshot} alt={`Portrait of ${me.name}`} width={220} height={220} class="contact-photo" />
+    </div>
     <dl class="contact">
       <dt>Email</dt>
       <dd><Email address={me.email} class="big" /></dd>
@@ -27,6 +34,9 @@ const me = (await getEntry('profile', 'me'))!.data;
 </Base>
 
 <style>
+  .contact-head { display: flex; flex-wrap: wrap-reverse; align-items: flex-end; justify-content: space-between; gap: 2rem; }
+  .contact-photo { width: 220px; height: 220px; border-radius: var(--radius-sm); object-fit: cover; object-position: 50% 30%; outline: 1px solid var(--c-rule); outline-offset: 3px; }
+  @media (max-width: 639px) { .contact-photo { width: 140px; height: 140px; } }
   .eyebrow {
     font-family: var(--font-jbmono);
     font-size: var(--text-xs);
