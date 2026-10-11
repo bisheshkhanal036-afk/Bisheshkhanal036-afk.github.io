@@ -15,11 +15,12 @@ const d = 'M' + curve.map(([a, b]) => `${X(a).toFixed(1)},${Y(b).toFixed(1)}`).j
   {[0, 0.5, 1].map((v) => <text class="chart-label" x={x0 - 6} y={Y(v) + 4} text-anchor="end">{v}</text>)}
   {[0, 0.5, 1].map((v) => <text class="chart-label" x={X(v)} y={y1 + 14} text-anchor="middle">{v}</text>)}
   <text class="chart-label" x={x1} y={H - 2} text-anchor="end">share of basin, highest risk first</text>
-  <path d={d} class="fc-line" />
+  <path d={d} class="fc-line" pathLength="1" />
   <text class="chart-label strong" x={X(0.55)} y={Y(0.25)}>AUC {auc.toFixed(2)}</text>
 </svg>
 
 <style>
   .fc { width: 100%; max-width: 22rem; height: auto; }
   .fc-line { fill: none; stroke: var(--chart-model); stroke-width: 2.25; }
+  :global(.js) .fc-line { stroke-dasharray: 1; }
 </style>

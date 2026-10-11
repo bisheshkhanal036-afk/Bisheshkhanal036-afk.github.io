@@ -26,6 +26,40 @@ export const HAZARD_RGB: Record<number, number[]> = {
   1: [240, 233, 218], 2: [229, 205, 150], 3: [208, 146, 62], 4: [135, 86, 15], 5: [58, 38, 12],
 };
 
+/** Trace the outer boundary of a cell mask into closed loops (grid units). Longest first. */
+function traceOutline(inside: (x: number, y: number) => boolean, W: number, H: number): string[] {
+  // Directed boundary edges, clockwise around each inside cell.
+  const next = new Map<string, [number, number][]>();
+  const add = (a: [number, number], b: [number, number]) => {
+    const k = `${a[0]},${a[1]}`;
+    (next.get(k) ?? next.set(k, []).get(k)!).push(b);
+  };
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (!inside(x, y)) continue;
+    if (!inside(x, y - 1)) add([x, y], [x + 1, y]);
+    if (!inside(x + 1, y)) add([x + 1, y], [x + 1, y + 1]);
+    if (!inside(x, y + 1)) add([x + 1, y + 1], [x, y + 1]);
+    if (!inside(x - 1, y)) add([x, y + 1], [x, y]);
+  }
+  const loops: [number, number][][] = [];
+  for (const [k, outs] of next) {
+    while (outs.length) {
+      const start = k.split(',').map(Number) as [number, number];
+      const loop: [number, number][] = [start];
+      let cur = outs.pop()!;
+      while (`${cur[0]},${cur[1]}` !== k) {
+        loop.push(cur);
+        const o = next.get(`${cur[0]},${cur[1]}`)!;
+        cur = o.pop()!;
+      }
+      loops.push(loop);
+    }
+  }
+  return loops
+    .sort((a, b) => b.length - a.length)
+    .map((l) => 'M' + l.map(([x, y]) => `${x},${y}`).join('L') + 'Z');
+}
+
 export function buildLayers() {
   const { w: W, h: H } = data.grid;
   const criteria = [...data.criteria].sort((a, b) => b.weight - a.weight).map((c) => ({ ...c, bytes: decode(c.values) }));
@@ -43,24 +77,33 @@ export function buildLayers() {
   const riskBytes = decode(data.risk.values);
   const hazardBytes = decode(steps.hazard.classes);
   const exposureBytes = decode(steps.report.highShareGrid);
+  const meteorBytes = decode(steps.meteor.shareGrid);
+  const inBasin = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && riskBytes[y * W + x] !== 0;
+  const outline = traceOutline(inBasin, W, H);
+  const presentClasses = [1, 2, 3, 4, 5].filter((k) => hazardBytes.includes(k));
+  const bipadCells = (steps.validation[0]?.cells ?? []).filter(([r, c]) => inBasin(c, r));
 
   return {
     W,
     H,
     criteria: criteria.map(({ id, label, weight }) => ({ id, label, weight })),
-    layerPngs: criteria.map((c) => png(c.bytes, scaled(criterionRamp))),
     riskPng: png(riskBytes, scaled(riskRamp)),
-    maskPng: png(riskBytes, (v) => (v === 0 ? null : [222, 214, 196])),
     hazardPng: png(hazardBytes, (v) => HAZARD_RGB[v] ?? null),
+    /** One image per hazard class present, so classes can appear one after another. */
+    classPngs: presentClasses.map((k) => ({ k, src: png(hazardBytes, (v) => (v === k ? HAZARD_RGB[k] : null)) })),
     exposurePng: png(exposureBytes, (v) => (v === 0 ? null : exposureRamp((v - 1) / 254))),
-    /** For the client: same order as `criteria`. */
+    outline,
+    bipadCells,
+    /** For the client: same order as `criteria`. Layer PNGs are added by the JSON endpoint. */
     payload: {
       w: W,
       h: H,
       weights: criteria.map((c) => c.weight),
       layers: criteria.map((c) => c.values),
+      meteor: steps.meteor.shareGrid,
       ramp: Array.from({ length: 256 }, (_, i) => riskRamp(i / 255)),
     },
+    layerPngs: criteria.map((c) => png(c.bytes, scaled(criterionRamp))),
     meta: data,
     steps,
   };

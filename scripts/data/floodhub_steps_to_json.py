@@ -103,10 +103,27 @@ for ev, meta in config.VALIDATION_EVENTS.items():
                        "curve": curve(r.success_rate), "byClass": fr(r.frequency_ratio.by_class),
                        "monotonic": r.frequency_ratio.monotonic})
 
+def block_view(a):
+    return a[: H * BLOCK, : W * BLOCK].reshape(H, BLOCK, W, BLOCK).transpose(0, 2, 1, 3).reshape(H, W, -1)
+
+# Where the validation evidence sits, on the web grid (cells, not points).
+from app.data.meteor_flood import get_meteor_flood_hazard  # noqa: E402
+from app.data.validation_extent import get_observed_flood_mask  # noqa: E402
+for v in validation:
+    obs = get_observed_flood_mask(aoi, v["event"]).observed_flooded
+    hit = block_view(obs).any(axis=2)
+    v["cells"] = [[int(r), int(c)] for r, c in zip(*np.nonzero(hit))]
+mf = get_meteor_flood_hazard(aoi)
+flooded = ((mf.depth_m > 0.0) & (mf.depth_m != mf.nodata)).astype("float64")
+share = block_view(flooded).mean(axis=2)
+meteor_grid = np.where(major > 0, np.clip(np.round(share * 255), 0, 255), 0).astype("uint8")
+
 m = meteor_comparison.compare_risk_surface_to_meteor(aoi, [], {}, True)
 meteor = {"floodType": m.meteor_flood_type, "returnPeriod": m.meteor_return_period, "auc": round(m.success_rate.auc, 3),
           "floodedFraction": round(m.success_rate.observed_flooded_fraction, 4),
-          "curve": curve(m.success_rate), "byClass": fr(m.frequency_ratio.by_class), "monotonic": m.frequency_ratio.monotonic}
+          "curve": curve(m.success_rate), "byClass": fr(m.frequency_ratio.by_class), "monotonic": m.frequency_ratio.monotonic,
+          "shareGrid": base64.b64encode(meteor_grid.tobytes()).decode(),
+          "shareNote": "share of each web cell that METEOR floods, 0-255"}
 
 s = shelters.identify_shelter_sites(aoi, [], {}, True)
 shelter = {"totalBuildings": s.total_buildings_in_aoi, "excludedTooSmall": s.excluded_too_small,
