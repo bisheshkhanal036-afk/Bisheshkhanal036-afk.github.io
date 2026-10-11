@@ -78,9 +78,10 @@ const publications = defineCollection({
     kind: z.enum(['article', 'preprint', 'conference abstract', 'letter']),
     // "published" is deliberately absent. Use only what Bishesh has stated.
     status: z.enum(['preprint', 'under review', 'in preparation', 'accepted', 'PLACEHOLDER']),
-    authors: z.array(author),
-    /** false while the full author list or order is unconfirmed. */
-    authorsConfirmed: z.boolean(),
+    /** Shown instead of an author list (Bishesh, 2026-10-11: "no need for author lists"). */
+    role: z.enum(['first author', 'co-author']),
+    /** Only for items with a Crossref record; used for verification and JSON-LD, not displayed. */
+    authors: z.array(author).default([]),
     venue: z.string().optional(),
     date: z.string().optional(), // ISO date or YYYY-MM
     doi: z.string().optional(), // must have a stored Crossref record

@@ -11,11 +11,11 @@
       "me": true
     }
   ],
-  "authorsConfirmed": true,
   "venue": "EarthArXiv",
   "date": "2026-06-03",
   "doi": "10.31223/x55n3n",
   "visibility": "public",
   "notes": "Author order from Crossref record (C6).",
-  "source": "crossref:10.31223/x55n3n"
+  "source": "crossref:10.31223/x55n3n",
+  "role": "co-author"
 }

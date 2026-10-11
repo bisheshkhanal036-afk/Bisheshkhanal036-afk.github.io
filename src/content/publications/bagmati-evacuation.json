@@ -2,19 +2,9 @@
   "title": "Flood Inundation Mapping and Evacuation Routing: An Approach for Flood Risk Management",
   "kind": "article",
   "status": "under review",
-  "authors": [
-    {
-      "name": "Bishesh Khanal",
-      "me": true,
-      "note": "first author"
-    },
-    {
-      "name": "PLACEHOLDER: co-authors"
-    }
-  ],
-  "authorsConfirmed": false,
   "visibility": "public",
-  "notes": "Venue confirmed by CV and research statement (C1). Same work as the final year project and the Sept 2024 thesis (C3). Co-author list not in CV.",
+  "notes": "Same work as the final year project and the Sept 2024 thesis. Result numbers hidden while under review (Bishesh, 2026-10-11).",
   "source": "cv.pdf p.1; research-statement.docx",
-  "venue": "Environmental Development (Elsevier)"
+  "venue": "Environmental Development (Elsevier)",
+  "role": "first author"
 }

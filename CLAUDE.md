@@ -80,10 +80,10 @@ Bishesh: "this can all be found in the CV". Check his own documents before askin
 - D1 Bagmati service area: omit (not in CV or statement). D5 FloodHUB repo is public (github.com/bisheshkhanal036-afk/FloodHUBnepal): link it; teammates not named.
 - Rasuwa: statement adds "ice-rock avalanche from Langtang Lirung"; title and status still unknown.
 
+- C2 Narayani: same paper as the CV entry, under review at Journal of Water and Climate Change, first author. Visibility stays minimal (no methods, figure or repo link) until Bishesh says otherwise.
+- Author lists: not shown anywhere. Each publication shows Bishesh's role (first author / co-author).
+- Bagmati result numbers (buildings, % isolated, route lengthening, service area): never shown while under review.
+
 ## Still open
-- C2 Narayani: CV says under review at JWCC, first author, public repo (github.com/Ayeesh77/narayani-rainfall-ml). Brief describes an in-preparation WCE paper, joint first. Possibly two papers. Default: "in preparation", minimal, no repo link.
-- D2 Bagmati numbers (13,629 buildings; 45.75% isolated; ~25% longer routes; also in statement): show only after Bishesh checks journal sharing policy. Default: hidden.
-- D3 Rasuwa title, status, public authors. D4 AGU author list. Co-authors of the Bagmati paper.
+- Rasuwa letter title and submission status.
 - Duplicate Coursera credential URL for two certifications (CV p.2).
-- E: no data yet; do not run any export script on Bishesh's data without asking.
-- F: launch without waiting; projects lacking data ship `visibility: minimal`.

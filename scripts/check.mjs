@@ -82,8 +82,8 @@ for (const file of walk(pubDir)) {
       errors.push(`${name}: title differs from Crossref.\n    site:     ${pub.title}\n    crossref: ${rec.title}`);
     }
     const recAuthors = rec.authors.map((a) => norm(`${a.given} ${a.family}`)).join(' | ');
-    const pubAuthors = pub.authors.map((a) => norm(a.name)).join(' | ');
-    if (recAuthors !== pubAuthors) {
+    const pubAuthors = (pub.authors ?? []).map((a) => norm(a.name)).join(' | ');
+    if (pubAuthors && recAuthors !== pubAuthors) {
       errors.push(`${name}: author list differs from Crossref.\n    site:     ${pubAuthors}\n    crossref: ${recAuthors}`);
     }
   }

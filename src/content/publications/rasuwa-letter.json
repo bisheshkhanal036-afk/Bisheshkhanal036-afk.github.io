@@ -2,11 +2,8 @@
   "title": "PLACEHOLDER: letter title",
   "kind": "letter",
   "status": "PLACEHOLDER",
-  "authors": [
-    { "name": "Bishesh Khanal", "me": true, "note": "co-author" }
-  ],
-  "authorsConfirmed": false,
   "visibility": "minimal",
-  "notes": "D3 default: show only that it is a co-authored letter to the editor on the 26 August 2026 Rasuwa disaster. Co-authors named in brief (Anuj Thapa, Aayush Roka, Bhesh Kumar Karki (corresponding), Manoj Lamichhane, Sagar Kafle) are withheld until order and consent confirmed.",
-  "source": "brief 2026-10-11"
+  "notes": "Co-authored letter to the editor on the 26 August 2026 Rasuwa disaster. Title and status unknown.",
+  "source": "brief 2026-10-11",
+  "role": "co-author"
 }
