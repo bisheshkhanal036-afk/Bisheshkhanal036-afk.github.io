@@ -36,9 +36,9 @@ Lighthouse: `CHROME_PATH=<playwright chromium> npx lighthouse@12 <url> --form-fa
 - Cleanup goes through `onTeardown()` in `src/lib/motion/lifecycle.ts`.
 - Fig. 1 (home, "Rain becomes river"): `src/lib/hydro/scs.ts` + `src/data/hero-schematic.json`. Schematic.
 - Scroll-scrubbed figures use `mountScrub()` (`src/lib/motion/scrub.ts`); ScrollTrigger start/end are wrapped in `clamp()` so figures on screen at load start at frame 0.
-- No synthetic figures (Bishesh, 2026-10-11: "remove the synthetic ones"). A project gets a figure only when real data exists. Bagmati, Kaligandaki and FloodHUB have none yet.
+- Real data wherever it exists; synthetic stand-ins only for projects without real data (Bishesh, 2026-10-11: "add synthetic figures for the ones with no real figures").
+  - Synthetic: Fig. 3 Isolation + Fig. 4 Swipe (bagmati-evacuation), Fig. 5 Two models (kaligandaki-preprint), Fig. 6 Layers (floodhub; data from `/figures/floodhub-layers.json`). Generators in `src/lib/schematic/`. Each carries `synthetic` in FigureShell ("Synthetic stand-in, not project results"), "Status: schematic", and an `awaiting:` note that `check.mjs` lists in PLACEHOLDERS.md (non-blocking). Never label a synthetic series "observed"; never show skill metrics or Bagmati counts on synthetic data. When real data arrives, replace the figure and delete its `awaiting:` note.
 - Fig. 2 (hanumante-ews, "Surrogate against the 2D model"): `src/data/hanumante/surrogate.json`, made by `scripts/data/surrogate_csv_to_json.py` from `C:\HEC_RAS\GRU_surrogate_leadtime3_12864\csv_outputs` (approved by Bishesh). Test event 160, chosen by rule (median event-mean NSE of 49 held-out events). `Q_obs` in those CSVs is HEC-RAS 2D output: label it "HEC-RAS 2D (reference)", status "simulated", never "observed". Client data fetched from `/figures/hanumante-surrogate.json`.
-- `FigureShell` keeps a `synthetic` prop and `check.mjs` still lists `awaiting:` notes, in case a stand-in is ever approved again.
 - Verify figures with `node scripts/verify/figures.mjs [base] [width]` (viewport captures; element screenshots scroll the page and move the scrub).
 
 ## Content model (`src/content.config.ts`)

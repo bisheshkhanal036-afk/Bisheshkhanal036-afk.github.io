@@ -47,12 +47,12 @@ Rules (enforced by `scripts/check.mjs`, details in `CLAUDE.md`):
 4. For a figure, add a component in `src/components/figures/` built on `FigureShell.astro`, register it in the `figures` enum in `src/content.config.ts` and the map in `src/pages/work/[slug].astro`, then list it under `figures:` in the project.
 
 ## Figures from real data
-Figures use real data only. Fig. 2 (Hanumante) is built from the surrogate run outputs:
+Fig. 2 (Hanumante) uses real model output. Figs. 3–6 (Bagmati, Kaligandaki, FloodHUB) are synthetic stand-ins, tagged as such on the page and listed in PLACEHOLDERS.md with the data each awaits. Fig. 2 is built from the surrogate run outputs:
 ```sh
 python scripts/data/surrogate_csv_to_json.py "C:/HEC_RAS/GRU_surrogate_leadtime3_12864/csv_outputs" \
     src/data/hanumante/surrogate.json --lead 3 --model GRU
 ```
-For a new figure: convert the raw files with the templates in `scripts/data/` (see `scripts/data/README.md`) into `src/data/<slug>/`, build a component on `FigureShell.astro`, and give it a caption with the real data source and status (`observed` or `simulated`).
+To replace a stand-in, or add a new figure: convert the raw files with the templates in `scripts/data/` (see `scripts/data/README.md`) into `src/data/<slug>/`, build a component on `FigureShell.astro`, and give it a caption with the real data source and status (`observed` or `simulated`).
 
 ## Verify
 With `npm run preview` running:

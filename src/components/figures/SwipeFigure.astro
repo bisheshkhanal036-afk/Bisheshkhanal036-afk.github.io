@@ -1,0 +1,125 @@
+---
+/**
+ * Fig. 4, Bagmati validation: "Model against satellite". Drag the divider (or use the
+ * slider) to compare the modelled extent (left) with the satellite-derived extent (right).
+ * Hexes where both agree are shaded the same on both sides. Not scroll-driven.
+ */
+import FigureShell from './FigureShell.astro';
+import { buildWorld, W, H } from '../../lib/schematic/catchment-world';
+
+const w = buildWorld();
+const { model, sat } = w.validation;
+const agree = w.hexes.filter((_, i) => model[i] && sat[i]);
+const modelOnly = w.hexes.filter((_, i) => model[i] && !sat[i]);
+const satOnly = w.hexes.filter((_, i) => sat[i] && !model[i]);
+
+const description =
+  'Two flood extents over the same stand-in catchment. Left of the divider is the modelled extent at peak; right of it is a satellite-derived extent. ' +
+  'Hexes flooded in both are shaded the same on both sides; hexes flooded in only one source are drawn in that source\'s colour. ' +
+  'Disagreement sits along the edges of the flood. Both extents here are synthetic.';
+---
+
+<FigureShell
+  id="fig-swipe"
+  number={4}
+  title="Model against satellite"
+  caption="Drag the divider to compare the modelled flood extent with a satellite-derived extent. Agreement is shaded alike on both sides; the rest shows where each source disagrees."
+  data="synthetic extents; to be replaced with the modelled September 2024 extent and the UNOSAT extent"
+  status="schematic"
+  description={description}
+  synthetic
+  class="swipe"
+>
+  <div class="swipe-wrap" data-swipe-wrap>
+    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Modelled and satellite flood extents with a movable divider" data-swipe>
+      <defs>
+        <clipPath id="swipe-left"><rect data-clip-l x="0" y="0" width={W} height={H} /></clipPath>
+        <clipPath id="swipe-right"><rect data-clip-r x="0" y="0" width={W} height={H} /></clipPath>
+        <pattern id="swipe-hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="5" height="5" class="sw-agree-bg" />
+          <line x1="0" y1="0" x2="0" y2="5" class="sw-agree-line" />
+        </pattern>
+      </defs>
+      <path d={w.outline} class="iso-outline" />
+      <g>{agree.map((h) => <path d={h.d} class="sw-agree" />)}</g>
+      <g clip-path="url(#swipe-left)">{modelOnly.map((h) => <path d={h.d} class="sw-model" />)}</g>
+      <g clip-path="url(#swipe-right)">{satOnly.map((h) => <path d={h.d} class="sw-sat" />)}</g>
+      <path d={w.river} class="iso-river" />
+      <g data-divider transform={`translate(${W / 2} 0)`}>
+        <line x1="0" x2="0" y1="0" y2={H} class="sw-div" />
+        <circle cx="0" cy={H / 2} r="13" class="sw-knob" />
+        <path d={`M-5,${H / 2 - 4}l-4,4l4,4M5,${H / 2 - 4}l4,4l-4,4`} class="sw-arrows" />
+      </g>
+      <text class="chart-label strong" x="12" y="20">model</text>
+      <text class="chart-label strong" x={W - 12} y="20" text-anchor="end">satellite</text>
+    </svg>
+  </div>
+  <label class="swipe-range">
+    <span>Divider</span>
+    <input type="range" min="0" max="100" value="50" step="1" data-swipe-range aria-label="Move the divider between model and satellite extents" />
+  </label>
+  <ul class="fig-key" aria-hidden="true">
+    <li><span class="sw sw-agree-sw"></span>flooded in both</li>
+    <li><span class="sw sw-model-sw"></span>model only</li>
+    <li><span class="sw sw-sat-sw"></span>satellite only</li>
+  </ul>
+</FigureShell>
+
+<style is:global>
+  .swipe-wrap { touch-action: pan-y; cursor: ew-resize; }
+  .swipe .iso-outline { fill: var(--c-paper-2); stroke: var(--chart-label); stroke-width: 1.25; }
+  .swipe .iso-river { fill: none; stroke: var(--chart-water-hi); stroke-width: 2.5; }
+  .sw-agree { fill: url(#swipe-hatch); }
+  .sw-agree-bg { fill: color-mix(in srgb, var(--chart-water-hi) 55%, var(--chart-water-lo)); }
+  .sw-agree-line { stroke: var(--chart-water-hi); stroke-width: 2; }
+  .sw-model { fill: var(--chart-model); }
+  .sw-sat { fill: var(--chart-model-2); }
+  [data-hexes] path, .sw-agree, .sw-model, .sw-sat { stroke: var(--c-paper); stroke-width: 0.75; }
+  .sw-div { stroke: var(--chart-ink); stroke-width: 2; }
+  .sw-knob { fill: var(--c-paper); stroke: var(--chart-ink); stroke-width: 2; }
+  .sw-arrows { fill: none; stroke: var(--chart-ink); stroke-width: 1.75; }
+  [data-clip-l] { transform-box: view-box; transform-origin: 0 0; transform: scaleX(0.5); }
+  [data-clip-r] { transform-box: view-box; transform-origin: 100% 0; transform: scaleX(0.5); }
+  .swipe-range { display: none; align-items: center; gap: 0.75rem; margin-top: 0.75rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .js .swipe-range { display: flex; }
+  .swipe-range input { flex: 1; accent-color: var(--c-accent); min-height: 2rem; }
+  .sw-agree-sw { background: color-mix(in srgb, var(--chart-water-hi) 55%, var(--chart-water-lo)); }
+  .sw-model-sw { background: var(--chart-model); }
+  .sw-sat-sw { background: var(--chart-model-2); }
+  @media (max-width: 639px) { .swipe .chart-label { font-size: 20px; } }
+</style>
+
+<script>
+  import { onTeardown } from '../../lib/motion/lifecycle';
+  document.addEventListener('astro:page-load', () => {
+    const fig = document.getElementById('fig-swipe');
+    if (!fig) return;
+    const svg = fig.querySelector<SVGSVGElement>('[data-swipe]')!;
+    const range = fig.querySelector<HTMLInputElement>('[data-swipe-range]')!;
+    const divider = fig.querySelector<SVGGElement>('[data-divider]')!;
+    const left = fig.querySelector<SVGRectElement>('[data-clip-l]')!;
+    const right = fig.querySelector<SVGRectElement>('[data-clip-r]')!;
+    const W = svg.viewBox.baseVal.width;
+
+    const set = (f: number) => {
+      f = Math.min(1, Math.max(0, f));
+      left.style.transform = `scaleX(${f})`;
+      right.style.transform = `scaleX(${1 - f})`;
+      divider.setAttribute('transform', `translate(${(f * W).toFixed(1)} 0)`);
+      range.value = String(Math.round(f * 100));
+    };
+    const fromPointer = (e: PointerEvent) => {
+      const r = svg.getBoundingClientRect();
+      set((e.clientX - r.left) / r.width);
+    };
+    let dragging = false;
+    const ac = new AbortController();
+    const o = { signal: ac.signal };
+    svg.addEventListener('pointerdown', (e) => { dragging = true; svg.setPointerCapture(e.pointerId); fromPointer(e); }, o);
+    svg.addEventListener('pointermove', (e) => { if (dragging) fromPointer(e); }, o);
+    svg.addEventListener('pointerup', () => { dragging = false; }, o);
+    range.addEventListener('input', () => set(Number(range.value) / 100), o);
+    set(0.5);
+    onTeardown(() => ac.abort());
+  });
+</script>

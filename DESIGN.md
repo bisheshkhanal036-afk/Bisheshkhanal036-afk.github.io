@@ -44,7 +44,7 @@ Every figure is one paper's figure:
 - Built on `FigureShell.astro`: a "Fig. N." caption with **Data:** and **Status:** (observed, simulated or schematic), play/pause and scrubber, and a written description.
 - SVG for lines and markers, canvas only for raster recompute (Fig. 6). Shared `.chart-*` classes for axes, grid and labels.
 - Final frame rendered at build time: the page reads correctly without JS and under reduced motion.
-- Real data only. Model output is labelled as such (Fig. 2 compares HEC-RAS 2D with the GRU; both are "simulated"). An illustrative figure is marked "schematic" (Fig. 1).
+- Real data where it exists; synthetic stand-ins (Figs. 3–6) carry a dashed "Synthetic stand-in, not project results" tag and "Status: schematic". Model output is labelled as such (Fig. 2 compares HEC-RAS 2D with the GRU; both are "simulated"). An illustrative figure is marked "schematic" (Fig. 1).
 
 ## Motion
 - Three eases: `--ease-out` (entrances), `--ease-in-out` (state changes), `--ease-gauge` (needle settle). Three durations: 160, 320, 720 ms.

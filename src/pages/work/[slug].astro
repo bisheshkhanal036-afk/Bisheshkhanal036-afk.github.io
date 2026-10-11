@@ -7,8 +7,12 @@ import Base from '../../layouts/Base.astro';
 import { render } from 'astro:content';
 import { listedProjects, listedInterests, listedPublications, statusLine } from '../../lib/content';
 import SurrogateFigure from '../../components/figures/SurrogateFigure.astro';
+import IsolationFigure from '../../components/figures/IsolationFigure.astro';
+import SwipeFigure from '../../components/figures/SwipeFigure.astro';
+import TwoModelsFigure from '../../components/figures/TwoModelsFigure.astro';
+import LayersFigure from '../../components/figures/LayersFigure.astro';
 
-const FIGURES = { SurrogateFigure };
+const FIGURES = { SurrogateFigure, IsolationFigure, SwipeFigure, TwoModelsFigure, LayersFigure };
 
 export async function getStaticPaths() {
   const projects = await listedProjects();

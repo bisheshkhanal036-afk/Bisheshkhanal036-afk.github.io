@@ -1,0 +1,102 @@
+---
+/**
+ * Fig. 6, FloodHUB: "Layers to risk". Five criterion layers (64×64) stand in an exploded
+ * stack; scrolling collapses them into one weighted-overlay risk surface. Weight sliders
+ * recompute the surface in the browser, with no backend. In FloodHUB the weights come from
+ * AHP pairwise comparisons; here they are set directly. All layers are synthetic.
+ */
+import FigureShell from './FigureShell.astro';
+import { buildLayers } from '../../lib/schematic/floodhub-layers';
+
+const { layers, riskPng, layerPngs } = buildLayers();
+const wSum = layers.reduce((a, l) => a + l.w, 0);
+
+const description =
+  'Five synthetic criterion layers for a stand-in valley, elevation, slope, land cover, distance to river and population, are stacked and then combined into one flood-risk surface by a weighted sum. ' +
+  'Moving a weight slider recomputes the surface: raising the distance-to-river weight concentrates risk along the channel, while raising population shifts it toward the town. The layers are synthetic and the weights are illustrative.';
+---
+
+<FigureShell
+  id="fig-layers"
+  number={6}
+  title="Layers to risk"
+  caption="Five criterion layers collapse into one flood-risk surface by weighted overlay. Move the weights to recompute it in your browser. FloodHUB derives the weights by AHP pairwise comparison; here you set them directly."
+  data="synthetic 64 × 64 layers; to be replaced with a sample exported from FloodHUB (GLO-30 DEM, WorldCover, population, OSM, HydroBASINS)"
+  status="schematic"
+  description={description}
+  synthetic
+  class="ly"
+>
+  <div class="ly-grid">
+    <div class="ly-stage" data-ly-stage>
+      <div class="ly-stack" data-ly-stack>
+        {layerPngs.map((_, i) => (
+          <img class="ly-layer" width="64" height="64" alt="" data-ly-layer={i} style={`--k:${layers.length - i}`} />
+        ))}
+        <img class="ly-risk" src={riskPng} width="64" height="64" alt="" data-ly-risk-img />
+        <canvas class="ly-risk ly-canvas" width="64" height="64" data-ly-canvas aria-hidden="true"></canvas>
+      </div>
+    </div>
+
+    <div class="ly-side">
+      <ol class="ly-legend" aria-label="Criterion layers, top to bottom">
+        {layers.map((l, i) => (
+          <li data-ly-label={i}><span class="ly-name">{l.label}</span><span class="ly-note">{l.note}</span></li>
+        ))}
+      </ol>
+      <fieldset class="ly-weights" data-ly-weights>
+        <legend>Weights</legend>
+        {layers.map((l, i) => (
+          <label>
+            <span class="ly-wname">{l.label}</span>
+            <input type="range" min="0" max="100" value={l.w} data-ly-w={i} />
+            <output data-ly-wout={i}>{Math.round((l.w / wSum) * 100)}%</output>
+          </label>
+        ))}
+      </fieldset>
+      <div class="ly-scale" aria-hidden="true"><span>lower risk</span><span class="ly-ramp"></span><span>higher risk</span></div>
+    </div>
+  </div>
+</FigureShell>
+
+<style is:global>
+  .ly-grid { display: grid; gap: 2rem; align-items: center; }
+  @media (min-width: 760px) { .ly-grid { grid-template-columns: 1.1fr 1fr; } }
+  .ly-stage { perspective: 1100px; display: grid; place-items: center; min-height: 340px; }
+  .ly-stack { position: relative; width: min(52vw, 260px); aspect-ratio: 1; transform-style: preserve-3d; transform: rotateX(56deg) rotateZ(-38deg); }
+  .ly-layer, .ly-risk {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    image-rendering: pixelated;
+    outline: 1px solid var(--chart-label);
+    transform: translateZ(calc(var(--k, 0) * var(--gap, 0px)));
+  }
+  .ly-risk { --k: 0; }
+  .ly-canvas { opacity: 0; }
+  .ly.is-live .ly-canvas { opacity: var(--risk-o, 1); }
+  .ly.is-live [data-ly-risk-img] { opacity: 0; }
+  /* Exploded state with JS; without JS the collapsed risk surface shows alone. */
+  .js .ly-stack { --gap: 46px; }
+  .ly-layer { opacity: 0; }
+  .js .ly-layer { opacity: 1; }
+
+  .ly-legend { display: grid; gap: 0.375rem; }
+  .ly-legend li { display: grid; font-size: var(--text-sm); transition: opacity var(--duration-base) var(--ease-out); }
+  .ly-name { color: var(--c-ink); }
+  .ly-note { font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .ly-weights { margin-top: 1.5rem; border: 0; padding: 0; display: none; gap: 0.25rem; }
+  .js .ly-weights { display: grid; }
+  .ly-weights legend { font-family: var(--font-jbmono); font-size: var(--text-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--c-ink-2); margin-bottom: 0.5rem; }
+  .ly-weights label { display: grid; grid-template-columns: 8.5rem 1fr 3rem; align-items: center; gap: 0.75rem; font-size: var(--text-sm); }
+  .ly-weights input { accent-color: var(--c-accent); min-height: 2rem; }
+  .ly-weights output { font-family: var(--font-jbmono); font-size: var(--text-xs); text-align: right; font-variant-numeric: tabular-nums; }
+  .ly-scale { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .ly-ramp { flex: 1; height: 8px; background: linear-gradient(90deg, rgb(240 233 218), rgb(219 160 74), rgb(135 86 15), rgb(58 38 12)); outline: 1px solid var(--c-rule); }
+</style>
+
+<script>
+  import { mountLayers } from './layers';
+  document.addEventListener('astro:page-load', () => {
+    const fig = document.getElementById('fig-layers');
+    if (fig) mountLayers(fig);
+  });
+</script>
