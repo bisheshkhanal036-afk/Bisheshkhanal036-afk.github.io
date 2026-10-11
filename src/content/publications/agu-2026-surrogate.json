@@ -3,13 +3,19 @@
   "kind": "conference abstract",
   "status": "accepted",
   "authors": [
-    { "name": "Bishesh Khanal", "me": true, "note": "co-author" },
-    { "name": "PLACEHOLDER: full author list (D4)" }
+    {
+      "name": "Bishesh Khanal",
+      "me": true,
+      "note": "co-author"
+    },
+    {
+      "name": "PLACEHOLDER: full author list (D4)"
+    }
   ],
   "authorsConfirmed": false,
   "venue": "AGU Fall Meeting 2026, session H091, San Francisco, 7–11 December 2026",
   "date": "2026-12",
   "visibility": "public",
-  "notes": "Presentation format omitted (unconfirmed). Abstract numbers live only in this entry (C4).",
+  "notes": "Earlier work that hanumante-ews builds on (research statement). Presentation format omitted. Abstract numbers live only in this entry (C4).",
   "source": "brief 2026-10-11; cv.pdf p.2"
 }

@@ -69,13 +69,21 @@ Bishesh's voice: concise, plain statements. At most two em dashes on the whole s
 - Conventional commits after each working milestone. **Do not push, change Pages settings or create repos without Bishesh's confirmation.**
 - The live site is still the legacy single page (deployed from branch). Pushing Astro source to `main` before switching Pages to "GitHub Actions" would break the live site.
 
-## Open decisions (2026-10-11). Defaults in force until answered
-- B1 headshot: none yet. B2 LinkedIn/GitHub links: pending (shown, tagged TODO).
-- C1 Bagmati venue: show "under review", no venue. C2 Narayani: "in preparation", title + authors, no repo link, minimal.
-- C3 thesis vs Bagmati: one page (bagmati-evacuation), thesis as origin, UNOSAT swipe as validation panel.
-- C4 AGU vs Hanumante: unanswered; no role claim on Hanumante ("Project").
+## Decisions (2026-10-11)
+Bishesh: "this can all be found in the CV". Check his own documents before asking. Sources beyond cv.pdf: `content/source/research-statement.docx` (11 Oct 2026).
+- B1 no headshot (none supplied). B2 LinkedIn (CV) and GitHub links shown.
+- C1 Bagmati venue: Environmental Development (Elsevier), under review, first author (CV + statement).
+- C3 final year project = Bagmati = Sept 2024 thesis: one page (bagmati-evacuation), thesis as origin, UNOSAT swipe as validation panel.
+- C4 AGU abstract (Kathmandu Valley GRU surrogate) is the earlier work; Hanumante applies the approach (statement). Numbers stay separate. No role claim on Hanumante.
 - C5 8th-semester surveys folded into hanumante-ews as "Field work" + CV line.
-- C6 Kaligandaki author order (Crossref: Roka, Khanal): unconfirmed.
-- D1 Bagmati service area: omit. D2 other Bagmati numbers: do not show. D3 Rasuwa: title + "co-authored letter" only. D5 FloodHUB: repo link pending; teammates not named.
+- C6 Kaligandaki author order: Crossref (Roka, Khanal).
+- D1 Bagmati service area: omit (not in CV or statement). D5 FloodHUB repo is public (github.com/bisheshkhanal036-afk/FloodHUBnepal): link it; teammates not named.
+- Rasuwa: statement adds "ice-rock avalanche from Langtang Lirung"; title and status still unknown.
+
+## Still open
+- C2 Narayani: CV says under review at JWCC, first author, public repo (github.com/Ayeesh77/narayani-rainfall-ml). Brief describes an in-preparation WCE paper, joint first. Possibly two papers. Default: "in preparation", minimal, no repo link.
+- D2 Bagmati numbers (13,629 buildings; 45.75% isolated; ~25% longer routes; also in statement): show only after Bishesh checks journal sharing policy. Default: hidden.
+- D3 Rasuwa title, status, public authors. D4 AGU author list. Co-authors of the Bagmati paper.
+- Duplicate Coursera credential URL for two certifications (CV p.2).
 - E: no data yet; do not run any export script on Bishesh's data without asking.
 - F: launch without waiting; projects lacking data ship `visibility: minimal`.

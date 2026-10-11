@@ -6,8 +6,16 @@
     "location": "Kathmandu, Nepal",
     "summary": "Civil Engineering graduate with first-author research in flood inundation modelling and precipitation extremes. Experienced in HEC-RAS 2D, HEC-HMS, GIS, and Python-based machine learning for hydrological prediction.",
     "links": [
-      { "label": "LinkedIn", "href": "https://www.linkedin.com/in/bisheshkhanal/", "source": "cv.pdf p.1 (TODO: confirm link is wanted, B2)" },
-      { "label": "GitHub", "href": "https://github.com/bisheshkhanal036-afk", "source": "message 2026-10-11 (TODO: confirm link is wanted, B2)" }
+      {
+        "label": "LinkedIn",
+        "href": "https://www.linkedin.com/in/bisheshkhanal/",
+        "source": "cv.pdf p.1"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/bisheshkhanal036-afk",
+        "source": "message 2026-10-11"
+      }
     ],
     "source": "cv.pdf p.1"
   }
