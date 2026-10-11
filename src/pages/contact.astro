@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import Email from '../components/Email.astro';
+import { getEntry } from 'astro:content';
+const me = (await getEntry('profile', 'me'))!.data;
+---
+
+<Base title="Contact" description={`How to reach ${me.name}.`}>
+  <article class="mx-auto max-w-page px-4 pt-14 sm:px-8">
+    <p class="eyebrow">Contact</p>
+    <h1>Email is the best way to reach me.</h1>
+    <dl class="contact">
+      <dt>Email</dt>
+      <dd><Email address={me.email} class="big" /></dd>
+      {me.links.map((l) => (
+        <>
+          <dt>{l.label}</dt>
+          <dd><a href={l.href} rel="me">{l.href.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</a></dd>
+        </>
+      ))}
+      <dt>CV</dt>
+      <dd><a href="/cv.pdf">cv.pdf</a> or the <a href="/cv/">web version</a></dd>
+      <dt>Based in</dt>
+      <dd>{me.location}</dd>
+    </dl>
+  </article>
+</Base>
+
+<style>
+  .eyebrow {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+  }
+  h1 {
+    margin-top: 0.5rem;
+    max-width: 30ch;
+    font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+    font-weight: 430;
+    letter-spacing: -0.02em;
+    line-height: var(--leading-tight);
+  }
+  .contact {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: 1rem 2rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--c-ink);
+    max-width: 44rem;
+  }
+  dt {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+    padding-top: 0.35rem;
+  }
+  dd { margin: 0; overflow-wrap: anywhere; }
+  dd a { color: var(--c-ink); text-decoration-color: var(--c-accent); text-underline-offset: 4px; }
+  dd :global(.big) { font-size: var(--text-lg); }
+</style>

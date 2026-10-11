@@ -17,6 +17,9 @@
         "source": "message 2026-10-11"
       }
     ],
-    "source": "cv.pdf p.1"
+    "source": "cv.pdf p.1",
+    "role": "Civil engineer. Flood modelling, hydrology and machine learning for early warning.",
+    "statement": "My research combines flood simulation, machine learning and mapping to understand who is exposed to flooding and whether they get warning early enough to reach safety. I work in Nepal, where steep basins, few gauges and dense settlement make this hard.",
+    "statementSource": "research-statement.docx (2026-10-11), first paragraph"
   }
 ]

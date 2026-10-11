@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bisheshkhanal036-afk.github.io/sitemap-index.xml

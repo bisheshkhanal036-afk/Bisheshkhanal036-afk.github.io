@@ -1,0 +1,8 @@
+{
+  "source": "Schematic parameters chosen for illustration. Not a real catchment or storm.",
+  "status": "schematic",
+  "catchment": { "areaKm2": 50, "curveNumber": 80, "tcHours": 3 },
+  "dtHours": 0.5,
+  "durationHours": 30,
+  "rainMm": [1, 1.5, 2, 3, 4, 6, 9, 14, 18, 12, 8, 6, 4.5, 3.5, 2.5, 2, 1.5, 1, 1, 0.5, 0.5, 0.5, 0.5, 0.5]
+}

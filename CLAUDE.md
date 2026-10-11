@@ -20,6 +20,19 @@ Owner: Bishesh Khanal (civil engineer; flood modelling, hydrology, ML for early 
 | `npm run build` | `check` then `astro build`. Production build: blocked by placeholders |
 | `npm run build:preview` | build allowing placeholders (local verification only) |
 | `npm run verify-doi -- <doi>` | fetch Crossref record into `src/data/crossref/` |
+| `npm test` | vitest (hydrology maths in `src/lib/hydro/`) |
+| `npm run cv:pdf` | compile `cv/cv-public.tex` → `public/cv.pdf` (public CV; never the private one) |
+| `node scripts/og.mjs` | render `public/og.png` + PNG favicons (needs `npm run preview` running) |
+| `node scripts/verify/shots.mjs <base> [paths]` | screenshots, aria snapshots, tab order, console errors → `reports/` (Git Bash: prefix `MSYS_NO_PATHCONV=1` when passing `/` paths) |
+
+Lighthouse: `CHROME_PATH=<playwright chromium> npx lighthouse@12 <url> --form-factor=mobile`.
+
+## Figures
+- `src/components/figures/FigureShell.astro`: caption, controls, description. Every figure uses it.
+- Final frame is rendered at build time in the `.astro` file; a `.ts` runtime only reveals it over a clock. CSS under `.js` sets frame 0; `window.__figuresReady` cancels the 4 s fallback in `Base.astro`.
+- `gsap.matchMedia` with a conditions object runs only when some condition matches: always include a condition for every viewport.
+- Cleanup goes through `onTeardown()` in `src/lib/motion/lifecycle.ts`.
+- Fig. 1 (home, "Rain becomes river"): `src/lib/hydro/scs.ts` + `src/data/hero-schematic.json`. Schematic.
 
 ## Content model (`src/content.config.ts`)
 - `profile` (`src/content/profile.json`), `cv` (`src/content/cv/*.json`, one file per section), `publications` (`src/content/publications/*.json`), `projects` (`src/content/projects/*.md`), `interests` (`src/content/interests.json`).

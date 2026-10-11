@@ -1,0 +1,24 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { s: CollectionEntry<'cv'>['data'] }
+const { s } = Astro.props;
+const id = `sec-${s.title.toLowerCase().replace(/[^a-z]+/g, '-')}`;
+---
+
+<section class="cv-sec" aria-labelledby={id}>
+  <h2 id={id}>{s.title}</h2>
+  <ol>
+    {s.entries.map((e) => (
+      <li class="cv-row">
+        <span class="cv-when">{e.period ?? ''}</span>
+        <div>
+          <p class="cv-title">{e.title}</p>
+          {(e.org || e.place) && <p class="cv-meta">{[e.org, e.place].filter(Boolean).join(' · ')}</p>}
+          {e.detail && <p class:list={[e.period ? 'cv-detail' : 'cv-meta']}>{e.detail}</p>}
+          {e.items.length > 0 && <ul class="cv-items">{e.items.map((it) => <li>{it}</li>)}</ul>}
+          {e.links.length > 0 && <p class="cv-meta">{e.links.map((l) => <a href={l.href}>{l.label}</a>)}</p>}
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>

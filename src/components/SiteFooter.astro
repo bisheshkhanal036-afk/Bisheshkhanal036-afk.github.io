@@ -1,0 +1,27 @@
+---
+import Email from './Email.astro';
+import { getEntry } from 'astro:content';
+const me = (await getEntry('profile', 'me'))!.data;
+---
+
+<footer class="site-footer mt-24">
+  <div class="mx-auto flex max-w-page flex-wrap items-baseline justify-between gap-x-8 gap-y-3 px-4 py-8 sm:px-8">
+    <p>© {new Date().getFullYear()} {me.name} · {me.location}</p>
+    <ul class="flex flex-wrap gap-x-5 gap-y-1">
+      <li><Email address={me.email} /></li>
+      {me.links.map((l) => <li><a href={l.href} rel="me">{l.label}</a></li>)}
+      <li><a href="/cv.pdf">CV (PDF)</a></li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--c-rule);
+    font-family: var(--font-jbmono);
+    font-size: var(--text-sm);
+    color: var(--c-ink-2);
+  }
+  .site-footer a { color: var(--c-ink-2); text-underline-offset: 3px; }
+  .site-footer a:hover { color: var(--c-ink); }
+</style>

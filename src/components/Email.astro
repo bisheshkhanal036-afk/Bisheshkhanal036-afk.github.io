@@ -1,0 +1,36 @@
+---
+/**
+ * Obfuscated email. The address never appears whole in the HTML: it is split and
+ * reversed, and a small script assembles the mailto link. Without JS the reader sees
+ * "name [at] domain" text, which still works for a human.
+ */
+interface Props {
+  address: string;
+  label?: string;
+  class?: string;
+}
+const { address, label, class: className } = Astro.props;
+const [user, domain] = address.split('@');
+const rev = (s: string) => s.split('').reverse().join('');
+---
+
+<a
+  class:list={['js-email', className]}
+  data-u={rev(user)}
+  data-d={rev(domain)}
+  data-label={label}
+  href="/contact/"
+>{user} [at] {domain.replace(/\./g, ' [dot] ')}</a>
+
+<script>
+  function assemble() {
+    document.querySelectorAll<HTMLAnchorElement>('a.js-email:not([data-done])').forEach((a) => {
+      const rev = (s: string) => s.split('').reverse().join('');
+      const addr = `${rev(a.dataset.u!)}@${rev(a.dataset.d!)}`;
+      a.href = `mailto:${addr}`;
+      a.textContent = a.dataset.label || addr;
+      a.dataset.done = '';
+    });
+  }
+  document.addEventListener('astro:page-load', assemble);
+</script>

@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found" description="This page does not exist.">
+  <article class="mx-auto max-w-page px-4 pt-20 sm:px-8">
+    <p class="code">404 · no record at this station</p>
+    <h1>This page does not exist.</h1>
+    <p class="text">The link may be old, or the page may have moved.</p>
+    <ul class="links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/work/">Work</a></li>
+      <li><a href="/publications/">Publications</a></li>
+      <li><a href="/cv/">CV</a></li>
+    </ul>
+  </article>
+</Base>
+
+<style>
+  .code {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-sm);
+    color: var(--c-accent-text);
+  }
+  h1 {
+    margin-top: 0.75rem;
+    font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+    font-weight: 430;
+    letter-spacing: -0.02em;
+    line-height: var(--leading-tight);
+  }
+  .text { margin-top: 1rem; color: var(--c-ink-2); }
+  .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 2rem; font-family: var(--font-jbmono); font-size: var(--text-sm); }
+  .links a { color: var(--c-ink); text-decoration-color: var(--c-accent); text-underline-offset: 4px; }
+</style>

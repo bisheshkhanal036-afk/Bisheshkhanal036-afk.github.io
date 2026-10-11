@@ -1,0 +1,126 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/CvSection.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+const me = (await getEntry('profile', 'me'))!.data;
+const sections = (await getCollection('cv')).sort((a, b) => a.data.order - b.data.order);
+const pubs = (await getCollection('publications', (p) => p.data.visibility !== 'hidden'))
+  // First-author work first, then newest first.
+  .sort((a, b) =>
+    Number(b.data.role === 'first author') - Number(a.data.role === 'first author') ||
+    (b.data.date ?? '').localeCompare(a.data.date ?? ''));
+
+const statusLine = (p: (typeof pubs)[number]['data']) =>
+  [p.status.charAt(0).toUpperCase() + p.status.slice(1), p.venue].filter(Boolean).join(', ');
+// Publications slot in after Projects (order 2).
+const before = sections.filter((s) => s.data.order < 3);
+const after = sections.filter((s) => s.data.order >= 3);
+---
+
+<Base title="CV" description={`Curriculum vitae of ${me.name}: education, projects, publications, conferences, awards and skills.`}>
+  <article class="mx-auto max-w-page px-4 pt-14 sm:px-8">
+    <header class="cv-head">
+      <div>
+        <p class="eyebrow">Curriculum vitae</p>
+        <h1>{me.name}</h1>
+        <p class="lede">{me.summary}</p>
+      </div>
+      <a class="pdf" href="/cv.pdf" download>Download PDF</a>
+    </header>
+
+    {before.map((s) => <Section s={s.data} />)}
+
+    <section class="cv-sec" aria-labelledby="sec-publications">
+      <h2 id="sec-publications">Publications and manuscripts</h2>
+      <ol>
+        {pubs.map((p) => (
+          <li class="cv-row">
+            <span class="cv-when">{p.data.date?.slice(0, 4) ?? ''}</span>
+            <div>
+              <p class="cv-title">{p.data.title}</p>
+              <p class="cv-meta">{statusLine(p.data)} · {p.data.role}</p>
+              {p.data.doi && <p class="cv-meta"><a href={`https://doi.org/${p.data.doi}`}>doi:{p.data.doi}</a></p>}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    {after.map((s) => <Section s={s.data} />)}
+
+    <p class="cv-note">References available on request.</p>
+  </article>
+</Base>
+
+<style>
+  .cv-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--c-ink);
+  }
+  .eyebrow {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+  }
+  h1 { margin-top: 0.5rem; font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl)); font-weight: 430; letter-spacing: -0.02em; line-height: var(--leading-tight); }
+  .lede { margin-top: 1rem; max-width: 40rem; color: var(--c-ink-2); }
+  .pdf {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-sm);
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--c-ink);
+    border-radius: var(--radius-xs);
+    color: var(--c-ink);
+    text-decoration: none;
+  }
+  .pdf:hover { background: var(--c-ink); color: var(--c-paper); }
+  .cv-note { margin-top: 2.5rem; font-size: var(--text-sm); color: var(--c-ink-2); }
+</style>
+
+<style is:global>
+  .cv-sec {
+    display: grid;
+    gap: 0.5rem 2rem;
+    padding-block: 2.25rem 0.5rem;
+    border-bottom: 1px solid var(--c-rule);
+  }
+  @media (min-width: 900px) { .cv-sec { grid-template-columns: 14rem 1fr; } }
+  .cv-sec h2 {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+    padding-top: 0.3rem;
+  }
+  .cv-row {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+  }
+  @media (max-width: 520px) { .cv-row { grid-template-columns: 1fr; gap: 0.125rem; } }
+  .cv-when {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    color: var(--c-ink-2);
+    padding-top: 0.3rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .cv-title { font-weight: 560; line-height: var(--leading-snug); }
+  .cv-meta { margin-top: 0.25rem; font-size: var(--text-sm); color: var(--c-ink-2); }
+  .cv-meta a { color: var(--c-accent-text); }
+  .cv-detail { margin-top: 0.375rem; }
+  .cv-items { margin-top: 0.375rem; padding-left: 1.1rem; list-style: square; }
+  .cv-items li { margin-top: 0.2rem; }
+  .cv-items li::marker { color: var(--c-accent); }
+</style>

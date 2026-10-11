@@ -1,0 +1,57 @@
+---
+const nav = [
+  { href: '/work/', label: 'Work' },
+  { href: '/research/', label: 'Research' },
+  { href: '/publications/', label: 'Publications' },
+  { href: '/cv/', label: 'CV' },
+  { href: '/contact/', label: 'Contact' },
+];
+const path = Astro.url.pathname.replace(/\/?$/, '/');
+---
+
+<header class="site-header">
+  <div class="mx-auto flex max-w-page flex-wrap items-baseline justify-between gap-x-8 gap-y-2 px-4 pt-5 pb-4 sm:px-8">
+    <a href="/" class="wordmark" aria-current={path === '/' ? 'page' : undefined}>Bishesh Khanal</a>
+    <nav aria-label="Main">
+      <ul class="flex flex-wrap gap-x-5 gap-y-1">
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--c-rule);
+  }
+  .wordmark {
+    font-size: var(--text-lg);
+    font-weight: 560;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    color: var(--c-ink);
+  }
+  nav a {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.02em;
+    color: var(--c-ink-2);
+    text-decoration: none;
+    padding-block: 0.25rem;
+    border-bottom: 1px solid transparent;
+    transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+  }
+  nav a:hover { color: var(--c-ink); }
+  nav a[aria-current='page'] {
+    color: var(--c-ink);
+    border-bottom-color: var(--c-accent);
+  }
+</style>

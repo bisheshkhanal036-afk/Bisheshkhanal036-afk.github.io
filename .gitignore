@@ -29,3 +29,4 @@ content/source/
 # verification output
 test-results/
 reports/
+.cvbuild/

@@ -13,15 +13,21 @@
     "build:preview": "npm run check:dev && astro build",
     "preview": "astro preview",
     "verify-doi": "node scripts/verify-doi.mjs",
-    "astro": "astro"
+    "astro": "astro",
+    "cv:pdf": "latexmk -pdf -interaction=nonstopmode -outdir=.cvbuild cv/cv-public.tex && node -e \"require('fs').copyFileSync('.cvbuild/cv-public.pdf','public/cv.pdf')\"",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.8",
+    "gsap": "^3.15.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "typescript": "^6.0.3"
+    "@playwright/test": "^1.64.0",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.3"
   }
 }
