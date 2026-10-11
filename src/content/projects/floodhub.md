@@ -8,7 +8,7 @@ interests: [exposure-evacuation]
 links:
   - { label: Repository, href: "https://github.com/bisheshkhanal036-afk/FloodHUBnepal", source: "github.com, public (checked 2026-10-11)" }
 figures:
-  - { component: LayersFigure, awaiting: "64 x 64 sample of the five FloodHUB layers and an AHP weight set (export script, run only with permission)" }
+  - { component: LayersFigure }
 visibility: public
 featured: false
 order: 4

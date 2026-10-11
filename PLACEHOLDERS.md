@@ -12,5 +12,4 @@ Non-blocking (Bishesh, 2026-10-11: "add synthetic figures for the ones with no r
 
 - src/content/projects/bagmati-evacuation.md: **IsolationFigure** awaits catchment boundary, depth at a few timesteps, hex-binned building counts per class, service areas, example routes (content/source/data/bagmati/)
 - src/content/projects/bagmati-evacuation.md: **SwipeFigure** awaits modelled September 2024 extent and UNOSAT extent as simplified polygons (content/source/data/bagmati/)
-- src/content/projects/floodhub.md: **LayersFigure** awaits 64 x 64 sample of the five FloodHUB layers and an AHP weight set (export script, run only with permission)
 - src/content/projects/kaligandaki-preprint.md: **TwoModelsFigure** awaits preprint PDF or its series, metrics and SHAP values (content/source/kaligandaki-preprint.pdf)
