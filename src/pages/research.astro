@@ -1,0 +1,170 @@
+---
+import Base from '../layouts/Base.astro';
+import { listedProjects, listedInterests, interestIds } from '../lib/content';
+
+const projects = await listedProjects();
+const interests = await listedInterests();
+const projectsFor = (id: string) => projects.filter((p) => interestIds(p).includes(id));
+const plural = (n: number) => `${n} project${n === 1 ? '' : 's'}`;
+---
+
+<Base title="Research" description="Research interests: surrogate modelling, flood early warning, exposure and evacuation, mountain hazards, rainfall extremes and ungauged basins.">
+  <article class="mx-auto max-w-page px-4 pt-14 sm:px-8">
+    <p class="eyebrow">Research</p>
+    <h1>Interests</h1>
+    <p class="lede">Each interest links to the projects that work on it.</p>
+
+    <section class="net" data-net aria-labelledby="net-title">
+      <h2 id="net-title" class="sr-only">Interests and projects</h2>
+      <p class="net-hint">Hover or focus an interest to trace its projects. Press it to keep the selection; Escape clears it.</p>
+      <svg class="net-edges" data-edges aria-hidden="true"></svg>
+      <div class="net-col">
+        <p class="col-label" aria-hidden="true">Interest</p>
+        <ul role="list">
+          {interests.map((i) => {
+            const ps = projectsFor(i.id);
+            return (
+              <li>
+                <button type="button" class="node node-i" data-interest={i.id} aria-pressed="false" aria-describedby={`desc-${i.id}`}>
+                  <span class="node-label">{i.data.label}</span>
+                  <span class="node-count">{i.data.exploring ? 'exploring' : ps.length ? plural(ps.length) : 'no project yet'}</span>
+                </button>
+                <span id={`desc-${i.id}`} class="sr-only">
+                  {ps.length ? `Projects: ${ps.map((p) => p.data.title).join('; ')}.` : 'No project yet. Exploring.'}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <div class="net-col net-col-p">
+        <p class="col-label" aria-hidden="true">Project</p>
+        <ul role="list">
+          {projects.map((p) => (
+            <li>
+              <a class="node node-p" href={`/work/${p.id}/`} data-project={p.id} data-interests={interestIds(p).join(' ')}>
+                <span class="node-label">{p.data.title}</span>
+                <span class="node-count">{p.data.status}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="list" aria-labelledby="list-title">
+      <h2 id="list-title">Interests and their projects</h2>
+      <dl>
+        {interests.map((i) => {
+          const ps = projectsFor(i.id);
+          return (
+            <div class="list-row">
+              <dt>{i.data.label}{i.data.exploring && <span class="tag">exploring</span>}</dt>
+              <dd>
+                {ps.length ? (
+                  <>
+                    <ul>{ps.map((p) => <li><a href={`/work/${p.id}/`}>{p.data.title}</a></li>)}</ul>
+                    <a class="filter-link" href={`/work/?interest=${i.id}`}>Show in project list</a>
+                  </>
+                ) : (
+                  <p class="none">No project yet.</p>
+                )}
+              </dd>
+            </div>
+          );
+        })}
+      </dl>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .eyebrow {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+  }
+  h1 { margin-top: 0.5rem; font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl)); font-weight: 430; letter-spacing: -0.02em; line-height: var(--leading-tight); }
+  .lede { margin-top: 1rem; max-width: 38rem; color: var(--c-ink-2); }
+
+  .net {
+    position: relative;
+    display: grid;
+    gap: 2rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--c-ink);
+  }
+  /* The network needs two columns; on narrow screens the list below carries the same links. */
+  .net { display: none; }
+  @media (min-width: 900px) { .net { display: grid; grid-template-columns: 5fr 5fr; gap: 9rem; } }
+  .net-hint { grid-column: 1 / -1; margin-bottom: -1rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .net-edges { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .net-col { position: relative; }
+  .net-col ul { display: grid; gap: 0.5rem; }
+  .col-label {
+    margin-bottom: 0.75rem;
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+  }
+  .node {
+    display: grid;
+    gap: 0.125rem;
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--c-rule);
+    border-radius: var(--radius-xs);
+    background: var(--c-paper);
+    color: var(--c-ink);
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity var(--duration-base) var(--ease-out), border-color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out);
+  }
+  .node-label { line-height: var(--leading-snug); }
+  .node-count { font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .node:hover, .node:focus-visible { border-color: var(--c-ink); }
+  .node-i[aria-pressed='true'] { border-color: var(--c-accent); background: var(--c-accent-wash); }
+
+  /* Highlight state, set by the script */
+  .net:global(.is-focus) .node { opacity: 0.45; }
+  .net:global(.is-focus) .node:global(.is-on) { opacity: 1; border-color: var(--c-accent); }
+  .net-edges :global(path) { fill: none; stroke: var(--c-rule-strong); stroke-width: 1; transition: stroke var(--duration-fast) var(--ease-out), opacity var(--duration-base) var(--ease-out); }
+  .net:global(.is-focus) .net-edges :global(path) { opacity: 0.15; }
+  .net:global(.is-focus) .net-edges :global(path.is-on) { opacity: 1; stroke: var(--c-accent); stroke-width: 1.75; }
+
+  .list { margin-top: 4rem; }
+  .list h2 {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--c-ink);
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+  }
+  .list-row { display: grid; gap: 0.5rem 2rem; padding-block: 1.25rem; border-bottom: 1px solid var(--c-rule); }
+  @media (min-width: 900px) { .list-row { grid-template-columns: 5fr 6fr; } }
+  .list-row dt { font-weight: 500; }
+  .tag { margin-left: 0.5rem; padding: 0 0.375rem; border: 1px solid var(--c-rule-strong); font-family: var(--font-jbmono); font-size: var(--text-xs); font-weight: 400; color: var(--c-ink-2); }
+  .list-row dd { margin: 0; font-size: var(--text-sm); }
+  .list-row dd li + li { margin-top: 0.25rem; }
+  .list-row a { color: var(--c-ink); text-decoration-color: var(--c-accent); text-underline-offset: 3px; }
+  .filter-link { display: inline-block; margin-top: 0.5rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-accent-text) !important; }
+  .none { color: var(--c-ink-2); }
+</style>
+
+<script>
+  import { mountNetwork } from '../components/interest-network';
+  document.addEventListener('astro:page-load', () => {
+    const net = document.querySelector<HTMLElement>('[data-net]');
+    if (net) mountNetwork(net);
+  });
+</script>

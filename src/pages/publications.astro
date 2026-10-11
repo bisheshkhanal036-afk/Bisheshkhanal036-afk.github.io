@@ -1,0 +1,121 @@
+---
+import Base from '../layouts/Base.astro';
+import { listedPublications } from '../lib/content';
+import { getEntry } from 'astro:content';
+
+const pubs = await listedPublications();
+const me = (await getEntry('profile', 'me'))!.data;
+const groups = [
+  { title: 'Journal manuscripts and preprints', kinds: ['article', 'preprint'] },
+  { title: 'Conference abstracts', kinds: ['conference abstract'] },
+  { title: 'Letters', kinds: ['letter'] },
+]
+  .map((g) => ({ ...g, items: pubs.filter((p) => g.kinds.includes(p.data.kind)) }))
+  .filter((g) => g.items.length);
+
+// ScholarlyArticle only for items with a DOI verified against Crossref (check.mjs enforces the record).
+const crossref = import.meta.glob<{ default: { title: string; authors: { given: string; family: string }[]; posted: number[] } }>(
+  '../data/crossref/*.json',
+  { eager: true },
+);
+const jsonLd = pubs
+  .filter((p) => p.data.doi)
+  .map((p) => {
+    const rec = Object.values(crossref).find((r) => r.default.title === p.data.title)?.default;
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'ScholarlyArticle',
+      headline: p.data.title,
+      identifier: `https://doi.org/${p.data.doi}`,
+      url: `https://doi.org/${p.data.doi}`,
+      datePublished: p.data.date,
+      publisher: p.data.venue,
+      author: (rec?.authors ?? []).map((a) => ({ '@type': 'Person', name: `${a.given} ${a.family}` })),
+    };
+  });
+---
+
+<Base title="Publications" description={`Manuscripts, preprints and conference abstracts by ${me.name}.`} jsonLd={jsonLd}>
+  <article class="mx-auto max-w-page px-4 pt-14 sm:px-8">
+    <p class="eyebrow">Publications</p>
+    <h1>Manuscripts, preprints and abstracts</h1>
+    <p class="lede">Status is given as it stands today. Nothing listed here is published in a journal yet.</p>
+
+    {groups.map((g) => (
+      <section class="pub-sec" aria-labelledby={`g-${g.kinds[0].replace(' ', '-')}`}>
+        <h2 id={`g-${g.kinds[0].replace(' ', '-')}`}>{g.title}</h2>
+        <ol>
+          {g.items.map((p) => (
+            <li class="pub" id={p.id}>
+              <span class="pub-status" data-status={p.data.status}>{p.data.status}</span>
+              <div>
+                <p class="pub-title">{p.data.title}</p>
+                <p class="pub-meta">
+                  {p.data.venue && <>{p.data.venue}<span class="sep" aria-hidden="true">·</span></>}
+                  {p.data.role.charAt(0).toUpperCase() + p.data.role.slice(1)}
+                  {p.data.date && <><span class="sep" aria-hidden="true">·</span>{p.data.date.slice(0, 7)}</>}
+                </p>
+                <p class="pub-links">
+                  {p.data.doi && <a href={`https://doi.org/${p.data.doi}`}>doi:{p.data.doi}</a>}
+                  {p.data.project && <a href={`/work/${p.data.project.id}/`}>Project page</a>}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
+  </article>
+</Base>
+
+<style>
+  .eyebrow {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+  }
+  h1 { margin-top: 0.5rem; max-width: 24ch; font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl)); font-weight: 430; letter-spacing: -0.02em; line-height: var(--leading-tight); }
+  .lede { margin-top: 1rem; max-width: 38rem; color: var(--c-ink-2); }
+
+  .pub-sec { margin-top: 3rem; }
+  .pub-sec h2 {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--c-ink);
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+  }
+  .pub {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem 2rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid var(--c-rule);
+    scroll-margin-top: 2rem;
+  }
+  @media (min-width: 900px) { .pub { grid-template-columns: 9rem 1fr; } }
+  .pub:target { background: var(--c-accent-wash); }
+  .pub-status {
+    align-self: start;
+    width: fit-content;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--c-rule-strong);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+  .pub-status[data-status='accepted'], .pub-status[data-status='preprint'] { border-color: var(--c-accent); }
+  .pub-title { font-size: var(--text-lg); line-height: var(--leading-snug); font-weight: 500; max-width: 46rem; }
+  .pub-meta { margin-top: 0.375rem; font-size: var(--text-sm); color: var(--c-ink-2); }
+  .sep { margin-inline: 0.5rem; color: var(--c-rule-strong); }
+  .pub-links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; margin-top: 0.5rem; font-family: var(--font-jbmono); font-size: var(--text-xs); }
+  .pub-links:empty { display: none; }
+  .pub-links a { color: var(--c-accent-text); text-underline-offset: 3px; }
+</style>

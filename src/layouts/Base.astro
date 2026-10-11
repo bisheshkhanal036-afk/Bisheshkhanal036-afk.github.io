@@ -57,7 +57,7 @@ const ogUrl = new URL(ogImage, Astro.site);
       document.documentElement.classList.add('js');
       clearTimeout(window.__jsGuard);
       window.__jsGuard = setTimeout(() => {
-        if (!window.__figuresReady) document.documentElement.classList.remove('js');
+        if (!window.__figuresReady && document.querySelector('[data-figure]')) document.documentElement.classList.remove('js');
       }, 4000);
     </script>
     <ClientRouter />

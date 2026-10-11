@@ -1,0 +1,124 @@
+---
+import Base from '../../layouts/Base.astro';
+import { listedProjects, listedInterests, interestIds } from '../../lib/content';
+
+const projects = await listedProjects();
+const interests = await listedInterests();
+const used = new Set(projects.flatMap(interestIds));
+const filters = interests.filter((i) => used.has(i.id));
+---
+
+<Base title="Work" description="Projects in flood modelling, surrogate machine learning, evacuation analysis and rainfall extremes in Nepal.">
+  <article class="mx-auto max-w-page px-4 pt-14 sm:px-8">
+    <p class="eyebrow">Work</p>
+    <h1>Projects</h1>
+    <p class="lede">Research projects and manuscripts on floods and rainfall in Nepal.</p>
+
+    <div class="filters" data-filters>
+      <p class="filters-label" id="filters-label">Filter by research interest</p>
+      <ul role="list" aria-labelledby="filters-label">
+        <li><button type="button" data-filter="" aria-pressed="true">All</button></li>
+        {filters.map((i) => (
+          <li><button type="button" data-filter={i.id} aria-pressed="false">{i.data.label.replace(/ \(.*\)$/, '')}</button></li>
+        ))}
+      </ul>
+      <p class="filters-status" aria-live="polite" data-filter-status></p>
+    </div>
+
+    <ol class="work-index" data-work-list>
+      {projects.map((p, n) => (
+        <li class="w-row" data-project data-interests={interestIds(p).join(' ')}>
+          <span class="w-idx">{String(n + 1).padStart(2, '0')}</span>
+          <div class="w-main">
+            <h2><a href={`/work/${p.id}/`}>{p.data.title}</a></h2>
+            <p class="w-meta">
+              <span>{p.data.status}</span>
+              {p.data.role && <span>{p.data.role}</span>}
+              <span>{p.data.period}</span>
+            </p>
+          </div>
+          <div class="w-side">
+            {p.data.visibility === 'public' && <p class="w-summary">{p.data.summary}</p>}
+            <ul class="w-tags" aria-label="Research interests">
+              {p.data.interests.map((ref) => {
+                const i = interests.find((x) => x.id === ref.id)!;
+                return <li>{i.data.label.replace(/ \(.*\)$/, '')}</li>;
+              })}
+            </ul>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </article>
+</Base>
+
+<style>
+  .eyebrow {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+  }
+  h1 { margin-top: 0.5rem; font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl)); font-weight: 430; letter-spacing: -0.02em; line-height: var(--leading-tight); }
+  .lede { margin-top: 1rem; max-width: 38rem; color: var(--c-ink-2); font-size: var(--text-lg); line-height: var(--leading-snug); }
+
+  /* Shown from first paint when JS is available (html.js is set in <head>), so no layout shift. */
+  .filters { display: none; margin-top: 2.5rem; }
+  :global(.js) .filters { display: block; }
+  .filters-label {
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+  }
+  .filters ul { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+  .filters button {
+    min-height: 2.25rem;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--c-rule-strong);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--c-ink-2);
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    text-align: left;
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+  }
+  .filters button:hover { color: var(--c-ink); border-color: var(--c-ink); }
+  .filters button[aria-pressed='true'] { background: var(--c-ink); border-color: var(--c-ink); color: var(--c-paper); }
+  .filters-status { margin-top: 0.5rem; min-height: 1.25em; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+
+  .work-index { margin-top: 1.5rem; border-top: 1px solid var(--c-ink); }
+  .w-row {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0.5rem 1rem;
+    padding-block: 1.75rem;
+    border-bottom: 1px solid var(--c-rule);
+    background: var(--c-paper);
+  }
+  @media (min-width: 900px) { .w-row { grid-template-columns: 3rem 5fr 6fr; gap: 2rem; } }
+  .w-row[hidden] { display: none; }
+  .w-idx { font-family: var(--font-jbmono); font-size: var(--text-sm); color: var(--c-accent-text); padding-top: 0.3rem; }
+  .w-main h2 { font-size: var(--text-lg); line-height: var(--leading-snug); font-weight: 500; }
+  .w-main h2 a { color: var(--c-ink); text-decoration: none; }
+  .w-main h2 a:hover { text-decoration: underline; text-decoration-color: var(--c-accent); text-underline-offset: 4px; }
+  .w-meta { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; margin-top: 0.5rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .w-meta span + span::before { content: '·'; margin-right: 0.75rem; color: var(--c-rule-strong); }
+  .w-side { grid-column: 2; }
+  @media (min-width: 900px) { .w-side { grid-column: 3; } }
+  .w-summary { color: var(--c-ink-2); }
+  .w-tags { display: flex; flex-wrap: wrap; gap: 0.375rem 1rem; margin-top: 0.75rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .w-tags li::before { content: ''; display: inline-block; width: 0.5rem; height: 1px; margin-right: 0.375rem; vertical-align: middle; background: var(--c-accent); }
+</style>
+
+<script>
+  import { mountWorkFilter } from '../../components/work-filter';
+  document.addEventListener('astro:page-load', () => {
+    const list = document.querySelector<HTMLElement>('[data-work-list]');
+    if (list) mountWorkFilter(list);
+  });
+</script>

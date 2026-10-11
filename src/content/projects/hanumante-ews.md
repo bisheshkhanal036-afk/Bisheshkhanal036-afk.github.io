@@ -17,3 +17,9 @@ featured: true
 order: 1
 source: brief 2026-10-11; research-statement.docx
 ---
+
+## Field work
+
+<!-- source: cv.pdf p.1, 8th semester project (2025) -->
+
+In 2025 I surveyed the floodplains of the Hanumante and Manohara rivers. The surveys became the terrain for HEC-RAS and HEC-HMS models and inundation maps, and for recommendations on engineering and non-engineering measures to reduce flood vulnerability.

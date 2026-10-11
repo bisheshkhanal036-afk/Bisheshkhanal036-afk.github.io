@@ -22,6 +22,8 @@ Owner: Bishesh Khanal (civil engineer; flood modelling, hydrology, ML for early 
 | `npm run verify-doi -- <doi>` | fetch Crossref record into `src/data/crossref/` |
 | `npm test` | vitest (hydrology maths in `src/lib/hydro/`) |
 | `npm run cv:pdf` | compile `cv/cv-public.tex` → `public/cv.pdf` (public CV; never the private one) |
+| `node scripts/verify/links.mjs` | internal links and #fragments in `dist/` |
+| `node scripts/verify/interactions.mjs [base]` | Work filter (Flip) and Research network states → `reports/` |
 | `node scripts/og.mjs` | render `public/og.png` + PNG favicons (needs `npm run preview` running) |
 | `node scripts/verify/shots.mjs <base> [paths]` | screenshots, aria snapshots, tab order, console errors → `reports/` (Git Bash: prefix `MSYS_NO_PATHCONV=1` when passing `/` paths) |
 

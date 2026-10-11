@@ -92,8 +92,8 @@ const ticks = Array.from({ length: 21 }, (_, i) => i); // 0.0 … 10.0 in 0.5 st
     }
   }
 
-  /* Below 1280px there is no margin for ticks: thin line only. */
-  @media (max-width: 1279px) {
+  /* Below 1400px the page margin is too narrow for ticks and readout: thin line only. */
+  @media (max-width: 1399px) {
     .gauge { right: 0; top: 0; bottom: 0; width: 3px; }
     .gauge-track { bottom: 0; width: 3px; background: transparent; }
     .tick, .needle, .readout { display: none; }
