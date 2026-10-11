@@ -85,4 +85,4 @@ Bishesh: "this can all be found in the CV". Check his own documents before askin
 - Bagmati result numbers (buildings, % isolated, route lengthening, service area): never shown while under review.
 
 ## Still open
-- Duplicate Coursera credential URL for two certifications (CV p.2).
+- Nothing open.

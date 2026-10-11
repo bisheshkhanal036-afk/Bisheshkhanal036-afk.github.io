@@ -5,19 +5,31 @@
     {
       "title": "Supervised Machine Learning: Regression and Classification",
       "org": "DeepLearning.AI and Stanford (Coursera)",
-      "links": [{ "label": "Credential", "href": "https://coursera.org/share/e5669465671a34e5445bc2617c6c8c2a", "source": "cv.pdf p.2" }],
+      "links": [
+        {
+          "label": "Credential",
+          "href": "https://coursera.org/share/e5669465671a34e5445bc2617c6c8c2a",
+          "source": "cv.pdf p.2"
+        }
+      ],
       "source": "cv.pdf p.2"
     },
     {
       "title": "Advanced Learning Algorithms",
       "org": "DeepLearning.AI and Stanford (Coursera)",
-      "links": [{ "label": "Credential", "href": "https://coursera.org/share/e5669465671a34e5445bc2617c6c8c2a", "source": "cv.pdf p.2 (TODO: confirm, same credential URL as the course above)" }],
-      "source": "cv.pdf p.2"
+      "links": [],
+      "source": "cv.pdf p.2 (credential link dropped: duplicated another course's URL, Bishesh 2026-10-11)"
     },
     {
       "title": "Neural Networks and Deep Learning",
       "org": "DeepLearning.AI (Coursera)",
-      "links": [{ "label": "Credential", "href": "https://coursera.org/share/072eb4c562e57e2f11b669c9afc13798", "source": "cv.pdf p.2" }],
+      "links": [
+        {
+          "label": "Credential",
+          "href": "https://coursera.org/share/072eb4c562e57e2f11b669c9afc13798",
+          "source": "cv.pdf p.2"
+        }
+      ],
       "source": "cv.pdf p.2"
     }
   ]
