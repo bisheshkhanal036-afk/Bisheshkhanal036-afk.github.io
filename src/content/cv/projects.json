@@ -1,0 +1,29 @@
+{
+  "title": "Projects",
+  "order": 2,
+  "entries": [
+    {
+      "period": "2025–2026",
+      "title": "Flood Inundation Mapping and Evacuation Routing: An Approach for Flood Risk Management",
+      "org": "Final year project, IOE Thapathali Campus",
+      "items": [
+        "Developed a hydrologic and hydraulic model and built 2D flood simulation models to analyze spatial flood extent and flow dynamics",
+        "Analyzed the critical infrastructure within the flood hazard zones",
+        "Proposed evacuation strategies based on flood depth and hazard zones"
+      ],
+      "source": "cv.pdf p.1"
+    },
+    {
+      "period": "2025",
+      "title": "Flood Hazard Mapping and Structural Design Recommendation",
+      "org": "8th semester project, IOE Thapathali Campus",
+      "items": [
+        "Conducted floodplain surveys along the Hanumante and Manohara river systems to support flood hazard mapping and hydraulic analysis",
+        "Applied the surveyed data to generate terrain for detailed analysis",
+        "Generated inundation maps and applied HEC-RAS and HEC-HMS for hydraulic and hydrologic simulation",
+        "Recommended both engineering and non-engineering measures for reducing flood vulnerability"
+      ],
+      "source": "cv.pdf p.1"
+    }
+  ]
+}

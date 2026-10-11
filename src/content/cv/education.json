@@ -1,0 +1,20 @@
+{
+  "title": "Education",
+  "order": 1,
+  "entries": [
+    {
+      "period": "2022–2026",
+      "title": "Bachelor of Civil Engineering",
+      "org": "IOE Thapathali Campus, Tribhuvan University",
+      "place": "Kathmandu, Nepal",
+      "source": "cv.pdf p.1 (percentage omitted for privacy, A1)"
+    },
+    {
+      "period": "2020–2022",
+      "title": "High school",
+      "org": "Prasadi Academy",
+      "place": "Lalitpur, Nepal",
+      "source": "cv.pdf p.1 (GPA omitted for privacy, A1)"
+    }
+  ]
+}

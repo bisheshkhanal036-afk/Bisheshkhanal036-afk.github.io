@@ -1,0 +1,16 @@
+{
+  "title": "Rainfall Variability and Extreme Event Classification Using Machine Learning in the Narayani Basin, Nepal",
+  "kind": "article",
+  "status": "in preparation",
+  "authors": [
+    { "name": "Bishesh Khanal", "me": true, "note": "joint first author" },
+    { "name": "Aayush Roka", "note": "joint first author" },
+    { "name": "Anuj Thapa" },
+    { "name": "Diwash Neupane" },
+    { "name": "Bhesh Kumar Karki", "note": "corresponding author" }
+  ],
+  "authorsConfirmed": false,
+  "visibility": "minimal",
+  "notes": "C2: status 'in preparation' and no repo link until Bishesh confirms. CV says 'under review, Journal of Water and Climate Change, first author'; brief says joint first, target Weather and Climate Extremes. Title from CV; order of the two joint first authors unconfirmed. TODO: confirm",
+  "source": "brief 2026-10-11 (authors, status); cv.pdf p.1 (title)"
+}

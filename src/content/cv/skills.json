@@ -1,0 +1,12 @@
+{
+  "title": "Skills",
+  "order": 6,
+  "entries": [
+    { "title": "Modelling and GIS", "detail": "HEC-RAS 2D, HEC-HMS, SWAT, ArcGIS Pro, QGIS, ArcMap", "source": "cv.pdf p.2" },
+    { "title": "Programming", "detail": "Python, LaTeX", "source": "cv.pdf p.2" },
+    { "title": "Libraries", "detail": "NumPy, Pandas, Scikit-learn, PyTorch, XGBoost, SHAP", "source": "cv.pdf p.2" },
+    { "title": "ML and DL models", "detail": "Random Forest, XGBoost, SVM, LSTM, GRU", "source": "cv.pdf p.2" },
+    { "title": "Domains", "detail": "Flood and hydrological modelling, precipitation extremes, water resources, remote sensing and GIS", "source": "cv.pdf p.2" },
+    { "title": "Languages", "detail": "Nepali (native), English, Hindi", "source": "cv.pdf p.2" }
+  ]
+}

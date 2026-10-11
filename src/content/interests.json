@@ -1,0 +1,8 @@
+[
+  { "id": "surrogate-modelling", "label": "Surrogate modelling that joins physics-based hydraulics and machine learning", "order": 1, "source": "brief 2026-10-11" },
+  { "id": "early-warning", "label": "Flood early warning and real-time forecasting", "order": 2, "source": "brief 2026-10-11" },
+  { "id": "exposure-evacuation", "label": "Hazard-based exposure, isolation and evacuation planning", "order": 3, "source": "brief 2026-10-11" },
+  { "id": "mountain-hazards", "label": "Mountain hazards that rainfall-based warnings miss (ice-rock avalanches, moraine and landslide dams, GLOFs)", "order": 4, "source": "brief 2026-10-11" },
+  { "id": "rainfall-extremes", "label": "Rainfall extremes and trends in Nepal", "order": 5, "source": "brief 2026-10-11" },
+  { "id": "ungauged-basins", "label": "Prediction in ungauged basins", "exploring": true, "order": 6, "source": "brief 2026-10-11" }
+]
