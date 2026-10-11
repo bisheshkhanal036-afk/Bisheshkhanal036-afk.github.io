@@ -5,11 +5,23 @@ import Email from '../components/Email.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { Image, getImage } from 'astro:assets';
 import headshot from '../assets/headshot.jpg';
+import Stats from '../components/home/Stats.astro';
+import Pipeline from '../components/home/Pipeline.astro';
+import ProjectThumb from '../components/home/ProjectThumb.astro';
+import { listedProjects, listedPublications, statusLine } from '../lib/content';
 
 const me = (await getEntry('profile', 'me'))!.data;
-const featured = (await getCollection('projects', (p) => p.data.featured && p.data.visibility === 'public'))
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 3);
+const projects = await listedProjects();
+const pubs = await listedPublications();
+const withProjects = new Set(projects.flatMap((p) => p.data.interests.map((r) => r.id)));
+// Thumbnail per project: real data where the site has it, a decorative motif otherwise.
+const THUMB: Record<string, { kind: 'hydro' | 'hazard' | 'contour'; seed?: number; note: string }> = {
+  'hanumante-ews': { kind: 'hydro', note: 'HEC-RAS 2D and GRU, one test event' },
+  floodhub: { kind: 'hazard', note: 'hazard classes, one FloodHUB run' },
+  'bagmati-evacuation': { kind: 'contour', seed: 3, note: '' },
+  'kaligandaki-preprint': { kind: 'contour', seed: 7, note: '' },
+  'narayani-precipitation': { kind: 'contour', seed: 11, note: '' },
+};
 const interests = (await getCollection('interests')).sort((a, b) => a.data.order - b.data.order);
 
 const photo = await getImage({ src: headshot, width: 400, height: 400, format: 'jpg' });
@@ -37,7 +49,7 @@ const person = {
         <p class="hero-role">{me.role}</p>
         <p class="hero-lede">{me.statement}</p>
         <ul class="hero-actions">
-          <li><a href="#work">Selected work</a></li>
+          <li><a href="#work">Work</a></li>
           <li><a href="/cv.pdf">CV (PDF)</a></li>
           <li><Email address={me.email} label="Email" /></li>
         </ul>
@@ -48,23 +60,86 @@ const person = {
     </div>
   </section>
 
-  <section id="work" class="mx-auto mt-20 max-w-page px-4 sm:px-8" aria-labelledby="work-title">
-    <div class="section-head">
-      <h2 id="work-title">Selected work</h2>
-      <a href="/work/">All projects</a>
+  <Stats />
+
+  <Pipeline />
+
+  <section id="work" class="mx-auto mt-28 max-w-page px-4 sm:px-8" aria-labelledby="work-title">
+    <div class="section-head" data-reveal>
+      <h2 id="work-title">Work</h2>
+      <a href="/work/">Filter by interest</a>
     </div>
     <ol class="work-list">
-      {featured.map((p, i) => (
-        <li class="work-row">
-          <span class="work-idx">{String(i + 1).padStart(2, '0')}</span>
-          <div class="work-main">
-            <h3><a href={`/work/${p.id}/`}>{p.data.title}</a></h3>
-            <p class="work-status">{p.data.status}{p.data.role && ` · ${p.data.role}`}</p>
-          </div>
-          <p class="work-summary">{p.data.summary}</p>
+      {projects.map((p, i) => {
+        const th = THUMB[p.id] ?? { kind: 'contour' as const, seed: i, note: '' };
+        return (
+          <li class="work-row" data-reveal>
+            <a class="work-thumb" href={`/work/${p.id}/`} tabindex="-1" aria-hidden="true">
+              <ProjectThumb kind={th.kind} seed={th.seed} />
+              {th.note && <span class="thumb-note">{th.note}</span>}
+            </a>
+            <div class="work-main">
+              <span class="work-idx">{String(i + 1).padStart(2, '0')}</span>
+              <h3><a href={`/work/${p.id}/`}>{p.data.title}</a></h3>
+              <p class="work-status">{p.data.status}{p.data.role && ` · ${p.data.role}`}{` · ${p.data.period}`}</p>
+              {p.data.visibility === 'public' && <p class="work-summary">{p.data.summary}</p>}
+              {p.data.figures.length > 0 && (
+                <p class="work-figs">{p.data.figures.length} interactive figure{p.data.figures.length > 1 ? 's' : ''}{p.data.figures.some((f) => f.awaiting) ? ' (stand-in data)' : ''}</p>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  </section>
+
+  <section class="mx-auto mt-28 max-w-page px-4 sm:px-8" aria-labelledby="pubs-title">
+    <div class="section-head" data-reveal>
+      <h2 id="pubs-title">Manuscripts and abstracts</h2>
+      <a href="/publications/">All publications</a>
+    </div>
+    <ol class="pub-list">
+      {pubs.map((p, i) => (
+        <li data-reveal style={`--i:${i}`}>
+          <span class="pub-chip" data-status={p.data.status}>{p.data.status}</span>
+          <a href={`/publications/#${p.id}`}>{p.data.title}</a>
+          <span class="pub-meta">{statusLine(p.data)} · {p.data.role}</span>
         </li>
       ))}
     </ol>
+  </section>
+
+  <section class="mx-auto mt-28 max-w-page px-4 sm:px-8" aria-labelledby="int-title">
+    <div class="section-head" data-reveal>
+      <h2 id="int-title">Research interests</h2>
+      <a href="/research/">How they link</a>
+    </div>
+    <ul class="int-list">
+      {interests.map((it, i) => (
+        <li data-reveal style={`--i:${i}`}>
+          <a href={withProjects.has(it.id) ? `/work/?interest=${it.id}` : '/research/'}>
+            <span class="int-n">{String(i + 1).padStart(2, '0')}</span>
+            <span>{it.data.label}</span>
+            {it.data.exploring && <span class="int-tag">exploring</span>}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="mx-auto mt-28 max-w-page px-4 sm:px-8" aria-labelledby="cta-title" data-reveal>
+    <div class="cta">
+    <Image src={headshot} alt="" width={96} height={96} class="cta-photo" />
+    <div>
+      <h2 id="cta-title">Questions about this work, its data or a collaboration?</h2>
+      <p>Email is the best way to reach me. The CV has the full record.</p>
+      <ul class="hero-actions">
+        <li><Email address={me.email} label="Email" /></li>
+        <li><a href="/cv.pdf">CV (PDF)</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </div>
+    </div>
   </section>
 </Base>
 
@@ -125,13 +200,13 @@ const person = {
     font-family: var(--font-jbmono);
     font-size: var(--text-sm);
   }
-  .hero-actions a {
+  .hero-actions :global(a) {
     color: var(--c-ink);
     text-decoration: none;
     border-bottom: 1px solid var(--c-accent);
     padding-bottom: 0.125rem;
   }
-  .hero-actions a:hover { color: var(--c-accent-text); }
+  .hero-actions :global(a:hover) { color: var(--c-accent-text); }
 
   .section-head {
     display: flex;
@@ -144,31 +219,46 @@ const person = {
   .section-head h2 { font-size: var(--text-xl); font-weight: 480; }
   .section-head a { font-family: var(--font-jbmono); font-size: var(--text-sm); color: var(--c-ink-2); }
 
-  .work-row {
-    display: grid;
-    grid-template-columns: 2.5rem 1fr;
-    gap: 0.25rem 1rem;
-    padding-block: 1.5rem;
-    border-bottom: 1px solid var(--c-rule);
-  }
-  @media (min-width: 900px) {
-    .work-row { grid-template-columns: 3rem 5fr 6fr; gap: 2rem; }
-  }
-  .work-idx {
-    font-family: var(--font-jbmono);
-    font-size: var(--text-sm);
-    color: var(--c-accent-text);
-    padding-top: 0.3rem;
-  }
-  .work-main h3 { font-size: var(--text-lg); line-height: var(--leading-snug); font-weight: 500; }
+  .work-list { margin-top: 0.5rem; }
+  .work-row { display: grid; gap: 1rem 2rem; padding-block: 2rem; border-bottom: 1px solid var(--c-rule); }
+  @media (min-width: 760px) { .work-row { grid-template-columns: 15rem 1fr; } }
+  @media (min-width: 1100px) { .work-row { grid-template-columns: 18rem 1fr; } }
+  .work-thumb { display: block; text-decoration: none; }
+  .thumb-note { display: block; margin-top: 0.375rem; font-family: var(--font-jbmono); font-size: 0.6875rem; color: var(--c-ink-2); }
+  .work-idx { font-family: var(--font-jbmono); font-size: var(--text-sm); color: var(--c-accent-text); }
+  .work-main h3 { margin-top: 0.25rem; font-size: var(--text-xl); line-height: var(--leading-snug); font-weight: 480; max-width: 32ch; }
   .work-main h3 a { color: var(--c-ink); text-decoration: none; }
   .work-main h3 a:hover { text-decoration: underline; text-decoration-color: var(--c-accent); text-underline-offset: 4px; }
-  .work-status {
-    margin-top: 0.375rem;
-    font-family: var(--font-jbmono);
-    font-size: var(--text-xs);
-    color: var(--c-ink-2);
-  }
-  .work-summary { grid-column: 2; color: var(--c-ink-2); }
-  @media (min-width: 900px) { .work-summary { grid-column: 3; } }
+  .work-status { margin-top: 0.5rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .work-summary { margin-top: 0.75rem; max-width: 40rem; color: var(--c-ink-2); }
+  .work-figs { margin-top: 0.75rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-accent-text); }
+
+  .pub-list li { display: grid; gap: 0.25rem 1.5rem; padding-block: 1.1rem; border-bottom: 1px solid var(--c-rule); }
+  @media (min-width: 760px) { .pub-list li { grid-template-columns: 8.5rem 1fr; } .pub-meta { grid-column: 2; } }
+  .pub-chip { align-self: start; width: fit-content; padding: 0.0625rem 0.5rem; border: 1px solid var(--c-rule-strong); border-radius: var(--radius-xs); font-family: var(--font-jbmono); font-size: var(--text-xs); white-space: nowrap; }
+  .pub-chip[data-status='accepted'], .pub-chip[data-status='preprint'] { border-color: var(--c-accent); }
+  .pub-list a { color: var(--c-ink); text-decoration: none; font-size: var(--text-base); line-height: var(--leading-snug); }
+  .pub-list a:hover { text-decoration: underline; text-decoration-color: var(--c-accent); text-underline-offset: 4px; }
+  .pub-meta { font-size: var(--text-xs); color: var(--c-ink-2); font-family: var(--font-jbmono); }
+
+  .int-list { display: grid; margin-top: 0.5rem; }
+  @media (min-width: 760px) { .int-list { grid-template-columns: 1fr 1fr; column-gap: 2rem; } }
+  .int-list a { display: grid; grid-template-columns: 2.5rem 1fr auto; align-items: baseline; gap: 0.75rem; padding-block: 0.875rem; border-bottom: 1px solid var(--c-rule); color: var(--c-ink); text-decoration: none; transition: color var(--duration-fast) var(--ease-out); }
+  .int-list a:hover { color: var(--c-accent-text); }
+  .int-n { font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .int-tag { font-family: var(--font-jbmono); font-size: var(--text-xs); padding: 0 0.375rem; border: 1px solid var(--c-rule-strong); color: var(--c-ink-2); }
+
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem 2rem; padding-block: 3rem; border-top: 1px solid var(--c-ink); }
+  .cta-photo { width: 96px; height: 96px; border-radius: var(--radius-sm); object-fit: cover; object-position: 50% 30%; }
+  .cta h2 { font-size: clamp(var(--text-xl), 3vw, var(--text-2xl)); font-weight: 430; line-height: var(--leading-snug); max-width: 28ch; }
+  .cta p { margin-top: 0.5rem; color: var(--c-ink-2); }
 </style>
+
+<script>
+  import { mountCounters } from '../components/home/counters';
+  import { onTeardown } from '../lib/motion/lifecycle';
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('[data-countup]')) onTeardown(mountCounters());
+  });
+</script>
+

@@ -1,0 +1,76 @@
+---
+/**
+ * Small moving thumbnail for a project row on the home page.
+ * - 'hydro'   real: the Hanumante surrogate event at Profile Line 26 (HEC-RAS 2D vs GRU)
+ * - 'hazard'  real: FloodHUB hazard classes for the cached run, revealed by a scan line
+ * - 'contour' decorative contour rings (no axes, no values), for projects without public data
+ * Motion is CSS scroll-driven where supported; otherwise the final frame shows.
+ */
+import surrogate from '../../data/hanumante/surrogate.json';
+import { buildLayers } from '../../lib/schematic/floodhub-layers';
+import { blobOutline, pathFrom } from '../../lib/schematic/noise';
+
+interface Props { kind: 'hydro' | 'hazard' | 'contour'; seed?: number }
+const { kind, seed = 1 } = Astro.props;
+const W = 240, H = 150;
+
+let ref = '', pred = '', hazard = '', rings: string[] = [];
+if (kind === 'hydro') {
+  const s = surrogate.sections.at(-1)!;
+  const max = Math.max(...s.qRef, ...s.qPred) * 1.08;
+  const n = s.qRef.length;
+  const P = (q: number[]) => pathFrom(q.map((v, t) => [8 + (t / (n - 1)) * (W - 16), H - 12 - (v / max) * (H - 28)] as [number, number]));
+  ref = P(s.qRef);
+  pred = P(s.qPred);
+}
+if (kind === 'hazard') hazard = buildLayers().hazardPng;
+if (kind === 'contour') rings = [1, 0.8, 0.6, 0.42, 0.26].map((k, i) => pathFrom(blobOutline(seed * 31 + i, W / 2 + 6 * i, H / 2 - 3 * i, 100 * k, 62 * k, 60, 0.18), true));
+---
+
+<div class:list={['thumb', `is-${kind}`]} aria-hidden="true">
+  {kind === 'hydro' && (
+    <svg viewBox={`0 0 ${W} ${H}`}>
+      <line x1="8" x2={W - 8} y1={H - 12} y2={H - 12} class="ax" />
+      <path d={ref} class="ref" pathLength="1" />
+      <path d={pred} class="pred" pathLength="1" />
+    </svg>
+  )}
+  {kind === 'hazard' && (
+    <div class="haz">
+      <img src={hazard} alt="" width="95" height="88" />
+      <span class="scan"></span>
+    </div>
+  )}
+  {kind === 'contour' && (
+    <svg viewBox={`0 0 ${W} ${H}`}>
+      {rings.map((d, i) => <path d={d} class="ring" pathLength="1" style={`--j:${i}`} />)}
+    </svg>
+  )}
+</div>
+
+<style>
+  .thumb { width: 100%; aspect-ratio: 8 / 5; background: var(--c-paper-2); border: 1px solid var(--c-rule); overflow: hidden; display: grid; place-items: center; }
+  svg { width: 100%; height: 100%; }
+  .ax { stroke: var(--c-rule-strong); stroke-width: 1; }
+  .ref { fill: none; stroke: var(--chart-ink); stroke-width: 2; stroke-linejoin: round; }
+  .pred { fill: none; stroke: var(--chart-model); stroke-width: 2; stroke-dasharray: 4 3; }
+  .ring { fill: none; stroke: var(--c-rule-strong); stroke-width: 1.2; }
+  .ring:nth-child(3) { stroke: var(--c-accent); }
+  .haz { position: relative; height: 88%; aspect-ratio: 95 / 88; }
+  .haz img { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+  .scan { position: absolute; left: -6%; right: -6%; top: 0; height: 2px; background: var(--c-accent); opacity: 0; }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .ref, .ring { stroke-dasharray: 1; animation: th-draw linear both; animation-timeline: view(); animation-range: entry 15% cover 50%; }
+      .ring { animation-range: entry calc(10% + var(--j) * 6%) cover calc(40% + var(--j) * 4%); }
+      .pred { animation: th-fade linear both; animation-timeline: view(); animation-range: cover 35% cover 55%; }
+      @keyframes th-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+      @keyframes th-fade { from { opacity: 0; } to { opacity: 1; } }
+      .haz img { animation: th-reveal linear both; animation-timeline: view(); animation-range: entry 15% cover 50%; }
+      .scan { animation: th-scan linear both; animation-timeline: view(); animation-range: entry 15% cover 50%; }
+      @keyframes th-reveal { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+      @keyframes th-scan { 0% { top: 0; opacity: 1; } 95% { top: 100%; opacity: 1; } 100% { top: 100%; opacity: 0; } }
+    }
+  }
+</style>

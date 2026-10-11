@@ -1,0 +1,74 @@
+---
+/**
+ * Home: how the projects connect, from rain to people. A line draws across as the section
+ * scrolls in (CSS scroll-driven animation; static where unsupported). Icons are decorative.
+ */
+const stages = [
+  { k: 'Rain', text: 'Rainfall extremes and trends across Nepal’s gauges.', href: '/work/narayani-precipitation/', link: 'Narayani basin' },
+  { k: 'River', text: 'Streamflow from process-based and machine-learning models.', href: '/work/kaligandaki-preprint/', link: 'Kaligandaki basin' },
+  { k: 'Flood', text: '2D hydraulic models of where the water goes.', href: '/work/bagmati-evacuation/', link: 'Bagmati catchment' },
+  { k: 'Warning', text: 'Surrogates that return the 2D model’s answer in seconds.', href: '/work/hanumante-ews/', link: 'Hanumante River' },
+  { k: 'People', text: 'Who is exposed and where they can shelter.', href: '/work/floodhub/', link: 'FloodHUB' },
+];
+---
+
+<section class="pipe mx-auto max-w-page px-4 sm:px-8" aria-labelledby="pipe-title">
+  <div class="head" data-reveal>
+    <p class="eyebrow">How the work connects</p>
+    <h2 id="pipe-title">From rain to the people downstream</h2>
+  </div>
+  <div class="flow-wrap">
+  <span class="line" aria-hidden="true"><span class="line-fill"></span></span>
+  <ol class="flow">
+    {stages.map((s, i) => (
+      <li data-reveal style={`--i:${i}`}>
+        <span class="node" aria-hidden="true">
+          <svg viewBox="0 0 48 48">
+            {i === 0 && <g class="ic">{[8, 15, 22, 29, 36].map((x, j) => <rect x={x} y="10" width="4" height={[10, 18, 26, 14, 8][j]} />)}</g>}
+            {i === 1 && <path class="ic-l" d="M4 30 C12 30 14 14 22 14 S32 34 44 22" />}
+            {i === 2 && <g class="ic-h">{[[14, 16], [26, 16], [20, 26], [32, 26], [26, 36]].map(([x, y]) => <path d={`M${x} ${y - 6}l5 3v6l-5 3l-5-3v-6z`} />)}</g>}
+            {i === 3 && <g class="ic-l"><circle cx="24" cy="26" r="14" /><path d="M24 26 L24 16 M24 26 L31 30" /><path d="M20 8 h8" /></g>}
+            {i === 4 && <g class="ic-l"><path d="M10 38 V22 L24 12 L38 22 V38 Z" /><path d="M20 38 V28 h8 v10" /></g>}
+          </svg>
+        </span>
+        <span class="k">{String(i + 1).padStart(2, '0')} · {s.k}</span>
+        <p>{s.text}</p>
+        <a href={s.href}>{s.link}</a>
+      </li>
+    ))}
+  </ol>
+  </div>
+</section>
+
+<style>
+  .pipe { margin-top: 7rem; }
+  .eyebrow { font-family: var(--font-jbmono); font-size: var(--text-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--c-ink-2); }
+  h2 { margin-top: 0.5rem; max-width: 22ch; font-size: clamp(var(--text-xl), 3.2vw, var(--text-3xl)); font-weight: 430; line-height: var(--leading-tight); letter-spacing: -0.015em; }
+  .flow-wrap { position: relative; margin-top: 2.5rem; }
+  .flow { position: relative; display: grid; gap: 2rem; padding-left: 3.5rem; }
+  @media (min-width: 900px) { .flow { grid-template-columns: repeat(5, 1fr); gap: 1.5rem; padding-left: 0; padding-top: 4.5rem; } }
+  .line { position: absolute; left: 1.4rem; top: 0.5rem; bottom: 0.5rem; width: 2px; background: var(--c-rule); }
+  @media (min-width: 900px) { .line { left: 0; right: 0; top: 1.45rem; bottom: auto; width: auto; height: 2px; } }
+  .line-fill { position: absolute; inset: 0; background: var(--c-accent); transform-origin: top; }
+  @media (min-width: 900px) { .line-fill { transform-origin: left; } }
+  li { position: relative; }
+  .node { position: absolute; left: -3.5rem; top: -0.4rem; display: grid; place-items: center; width: 3rem; height: 3rem; border: 1px solid var(--c-rule-strong); border-radius: 50%; background: var(--c-paper); }
+  @media (min-width: 900px) { .node { left: 0; top: -4.5rem; } }
+  svg { width: 1.75rem; height: 1.75rem; }
+  .ic rect { fill: var(--chart-water-hi); }
+  .ic-l, .ic-l * { fill: none; stroke: var(--c-ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .ic-h path { fill: var(--chart-water-lo); stroke: var(--c-ink); stroke-width: 1.5; }
+  .k { font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-accent-text); letter-spacing: 0.04em; }
+  p { margin-top: 0.375rem; font-size: var(--text-sm); }
+  a { display: inline-block; margin-top: 0.5rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink); text-decoration-color: var(--c-accent); text-underline-offset: 3px; }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .line-fill { animation: pipe-grow linear both; animation-timeline: view(); animation-range: entry 20% cover 55%; }
+      @keyframes pipe-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+      @media (min-width: 900px) { @keyframes pipe-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } } }
+      .node { animation: pipe-node linear both; animation-timeline: view(); animation-range: entry 30% cover 40%; }
+      @keyframes pipe-node { from { transform: scale(0.6); border-color: var(--c-rule); } to { transform: scale(1); border-color: var(--c-accent); } }
+    }
+  }
+</style>

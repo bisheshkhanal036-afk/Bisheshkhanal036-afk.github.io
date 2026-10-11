@@ -1,0 +1,45 @@
+---
+/**
+ * Home: four numbers from the work, each read from a sourced data file (no hand-typed values).
+ * Counts up once when scrolled into view (counters.ts); final values are in the HTML.
+ */
+import surrogate from '../../data/hanumante/surrogate.json';
+import steps from '../../data/floodhub/steps.json';
+import layers from '../../data/floodhub/layers.json';
+
+const area = steps.report.zonal.reduce((a, z) => a + z.areaKm2, 0);
+const stats = [
+  { v: surrogate.leadHours, unit: 'h', label: 'forecast lead time of the Hanumante flood surrogate', href: '/work/hanumante-ews/' },
+  { v: surrogate.sections.length, unit: '', label: 'river cross-sections it predicts at once', href: '/work/hanumante-ews/' },
+  { v: Math.round(area), unit: 'km²', label: 'basin mapped for flood risk in one FloodHUB run', href: '/work/floodhub/' },
+  { v: steps.report.buildingsTotal, unit: '', label: 'buildings tagged with a hazard class in that run', href: '/work/floodhub/' },
+];
+const crit = layers.criteria.length;
+---
+
+<section class="stats mx-auto max-w-page px-4 sm:px-8" aria-label="The work in numbers">
+  <ul>
+    {stats.map((s, i) => (
+      <li data-reveal style={`--i:${i}`}>
+        <a href={s.href}>
+          <span class="num"><span data-countup={s.v}>{s.v.toLocaleString('en-GB')}</span>{s.unit && <span class="unit">{s.unit}</span>}</span>
+          <span class="lbl">{s.label}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p class="note">FloodHUB figures come from one run with {crit} criteria; the surrogate from one trained model. Details on each project page.</p>
+</section>
+
+<style>
+  .stats { margin-top: 5rem; }
+  ul { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--c-ink); border-left: 1px solid var(--c-rule); }
+  @media (min-width: 900px) { ul { grid-template-columns: repeat(4, 1fr); } }
+  li { border-right: 1px solid var(--c-rule); border-bottom: 1px solid var(--c-rule); }
+  a { display: grid; gap: 0.5rem; height: 100%; padding: 1.25rem 1rem 1.5rem; color: inherit; text-decoration: none; transition: background-color var(--duration-fast) var(--ease-out); }
+  a:hover { background: var(--c-paper-2); }
+  .num { font-family: var(--font-jbmono); font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl)); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--c-ink); }
+  .unit { margin-left: 0.25rem; font-size: 0.45em; letter-spacing: 0; color: var(--c-accent-text); }
+  .lbl { font-size: var(--text-sm); color: var(--c-ink-2); line-height: 1.4; }
+  .note { margin-top: 0.75rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+</style>
