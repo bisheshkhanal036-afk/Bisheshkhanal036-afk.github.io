@@ -46,11 +46,13 @@ Rules (enforced by `scripts/check.mjs`, details in `CLAUDE.md`):
 3. To link a manuscript, set `"project": "<slug>"` in its publication JSON.
 4. For a figure, add a component in `src/components/figures/` built on `FigureShell.astro`, register it in the `figures` enum in `src/content.config.ts` and the map in `src/pages/work/[slug].astro`, then list it under `figures:` in the project.
 
-## Replace a synthetic figure with real data
-Figures 2–6 currently run on seeded synthetic data and say so on the page. To swap in real data:
-1. Put raw files in `content/source/data/<slug>/` (gitignored).
-2. Convert them with the templates in `scripts/data/` (see `scripts/data/README.md`) into `src/data/<slug>/`.
-3. Point the figure at the new files, update its caption (`data`, `status`), drop `synthetic`, and remove the `awaiting:` note from the project frontmatter.
+## Figures from real data
+Figures use real data only. Fig. 2 (Hanumante) is built from the surrogate run outputs:
+```sh
+python scripts/data/surrogate_csv_to_json.py "C:/HEC_RAS/GRU_surrogate_leadtime3_12864/csv_outputs" \
+    src/data/hanumante/surrogate.json --lead 3 --model GRU
+```
+For a new figure: convert the raw files with the templates in `scripts/data/` (see `scripts/data/README.md`) into `src/data/<slug>/`, build a component on `FigureShell.astro`, and give it a caption with the real data source and status (`observed` or `simulated`).
 
 ## Verify
 With `npm run preview` running:

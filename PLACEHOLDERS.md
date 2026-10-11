@@ -7,11 +7,6 @@ None. Production build allowed.
 
 ## Schematic figures on synthetic data
 
-Non-blocking (Bishesh, 2026-10-11: "make it with a placeholder"). Each is captioned "Status: schematic"
-and tagged "Synthetic stand-in, not project results". Replace with real data:
+Synthetic figures were removed on 2026-10-11. Any listed here would be non-blocking stand-ins awaiting real data:
 
-- src/content/projects/bagmati-evacuation.md: **IsolationFigure** awaits catchment boundary, depth at a few timesteps, hex-binned building counts per class, service areas, example routes (content/source/data/bagmati/)
-- src/content/projects/bagmati-evacuation.md: **SwipeFigure** awaits modelled September 2024 extent and UNOSAT extent as simplified polygons (content/source/data/bagmati/)
-- src/content/projects/floodhub.md: **LayersFigure** awaits 64 x 64 sample of the five FloodHUB layers and an AHP weight set (export script, run only with permission)
-- src/content/projects/hanumante-ews.md: **RaceFigure** awaits event CSV, river centreline, 21 cross-section locations, depth grid timesteps (content/source/data/hanumante/)
-- src/content/projects/kaligandaki-preprint.md: **TwoModelsFigure** awaits preprint PDF or its series, metrics and SHAP values (content/source/kaligandaki-preprint.pdf)
+None.

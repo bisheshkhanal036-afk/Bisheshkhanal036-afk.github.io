@@ -12,9 +12,6 @@ facts:
   - { label: Calibration event, value: September 2024 flood, source: brief 2026-10-11 }
   - { label: Recognition, value: "Best Final Year Project, IOE Thapathali, 2026", source: cv.pdf p.2 }
 interests: [exposure-evacuation]
-figures:
-  - { component: IsolationFigure, awaiting: "catchment boundary, depth at a few timesteps, hex-binned building counts per class, service areas, example routes (content/source/data/bagmati/)" }
-  - { component: SwipeFigure, awaiting: "modelled September 2024 extent and UNOSAT extent as simplified polygons (content/source/data/bagmati/)" }
 visibility: public
 featured: true
 order: 2

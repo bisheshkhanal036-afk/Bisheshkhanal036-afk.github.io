@@ -91,6 +91,12 @@ const { id, number, title, caption, data, status, description, synthetic = false
   .fig-scrub input { width: 100%; accent-color: var(--c-accent); min-height: 2rem; }
   .fig-clock { min-width: 6.5ch; text-align: right; color: var(--c-ink-2); font-variant-numeric: tabular-nums; }
 
+  /* Shared HTML key under a figure */
+  .fig-key { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; margin-top: 0.5rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .fig-key li { display: flex; align-items: center; gap: 0.5rem; }
+  .fig-key .sw { display: inline-block; width: 0.75rem; height: 0.75rem; }
+  .fig-key .sw-line { height: 2px; }
+
   .fig-caption {
     margin-top: 0.875rem;
     font-size: var(--text-sm);

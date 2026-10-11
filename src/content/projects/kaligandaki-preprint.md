@@ -8,8 +8,6 @@ stack: [SWAT, XGBoost, SHAP, Python]
 interests: [surrogate-modelling, early-warning]
 links:
   - { label: "Preprint (doi:10.31223/x55n3n)", href: "https://doi.org/10.31223/x55n3n", source: "crossref:10.31223/x55n3n" }
-figures:
-  - { component: TwoModelsFigure, awaiting: "preprint PDF or its series, metrics and SHAP values (content/source/kaligandaki-preprint.pdf)" }
 visibility: public
 featured: true
 order: 3

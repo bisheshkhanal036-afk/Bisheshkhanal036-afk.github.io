@@ -44,7 +44,7 @@ Every figure is one paper's figure:
 - Built on `FigureShell.astro`: a "Fig. N." caption with **Data:** and **Status:** (observed, simulated or schematic), play/pause and scrubber, and a written description.
 - SVG for lines and markers, canvas only for raster recompute (Fig. 6). Shared `.chart-*` classes for axes, grid and labels.
 - Final frame rendered at build time: the page reads correctly without JS and under reduced motion.
-- Synthetic stand-ins carry a dashed "Synthetic stand-in, not project results" tag.
+- Real data only. Model output is labelled as such (Fig. 2 compares HEC-RAS 2D with the GRU; both are "simulated"). An illustrative figure is marked "schematic" (Fig. 1).
 
 ## Motion
 - Three eases: `--ease-out` (entrances), `--ease-in-out` (state changes), `--ease-gauge` (needle settle). Three durations: 160, 320, 720 ms.
@@ -60,4 +60,4 @@ Every figure is one paper's figure:
 ## Performance decisions
 - Variable Newsreader (129 KB) replaced by three static weights (≈23 KB each) to bring mobile LCP under 2.5 s.
 - Italic dropped (144 KB) for the same reason; emphasis uses colour and weight.
-- Large figure data (Fig. 6 layers) is fetched as static JSON instead of being inlined in HTML.
+- Figure data for interaction (Fig. 2, all 21 sections) is fetched as static JSON instead of being inlined in HTML.
