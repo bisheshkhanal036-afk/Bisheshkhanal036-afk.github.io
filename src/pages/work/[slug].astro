@@ -5,6 +5,7 @@
  */
 import Base from '../../layouts/Base.astro';
 import { render } from 'astro:content';
+import aims from '../../data/aims.json';
 import { listedProjects, listedInterests, listedPublications, statusLine } from '../../lib/content';
 import SurrogateFigure from '../../components/figures/SurrogateFigure.astro';
 import IsolationFigure from '../../components/figures/IsolationFigure.astro';
@@ -30,6 +31,7 @@ const all = await listedProjects();
 const idx = all.findIndex((p) => p.id === project.id);
 const next = all[(idx + 1) % all.length];
 
+const aim = (aims.projects as Record<string, { text: string }>)[project.id]?.text;
 const description = isPublic ? d.summary : `${d.title}. ${d.status}.`;
 const fmtFact = (f: (typeof d.facts)[number]) => `${f.value}${f.unit ? (f.unit === '%' ? '' : ' ') + f.unit : ''}`;
 ---
@@ -60,6 +62,7 @@ const fmtFact = (f: (typeof d.facts)[number]) => `${f.value}${f.unit ? (f.unit =
       <div class="cs-grid">
         <div class="cs-text">
           <p class="cs-summary">{d.summary}</p>
+          {aim && <div class="cs-aim"><p class="cs-aim-k">Why it matters</p><p>{aim}</p></div>}
           <div class="prose"><Content /></div>
         </div>
 
@@ -141,6 +144,9 @@ const fmtFact = (f: (typeof d.facts)[number]) => `${f.value}${f.unit ? (f.unit =
   .cs-grid { display: grid; gap: 3rem; margin-top: 3.5rem; }
   @media (min-width: 900px) { .cs-grid { grid-template-columns: 7fr 4fr; gap: 4rem; } }
   .cs-summary { font-size: var(--text-lg); line-height: var(--leading-snug); max-width: 38rem; }
+  .cs-aim { margin-top: 1.75rem; max-width: 38rem; padding: 1rem 1.25rem; border-left: 3px solid var(--c-accent); background: var(--c-paper-2); }
+  .cs-aim-k { font-family: var(--font-jbmono); font-size: var(--text-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--c-accent-text); }
+  .cs-aim p + p { margin-top: 0.375rem; }
   .prose { margin-top: 1.5rem; max-width: 38rem; }
   .prose :global(h2) { margin-top: 2.5rem; font-size: var(--text-xl); font-weight: 480; }
   .prose :global(p) { margin-top: 1rem; }

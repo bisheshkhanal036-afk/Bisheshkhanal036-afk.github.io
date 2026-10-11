@@ -1,0 +1,31 @@
+---
+/** Home: statement of aim (src/data/aims.json; drafts are flagged until Bishesh approves them). */
+import aims from '../../data/aims.json';
+const { title, quote, body } = aims.home;
+---
+
+<section class="aim mx-auto max-w-page px-4 sm:px-8" aria-labelledby="aim-title">
+  <p class="eyebrow" data-reveal>The aim</p>
+  <h2 id="aim-title" data-reveal style="--i:1">{title.text}</h2>
+  <div class="aim-grid">
+    <blockquote data-reveal style="--i:2">
+      <p>{quote.text}</p>
+      <cite>From my research statement</cite>
+    </blockquote>
+    <div class="aim-body" data-reveal style="--i:3">
+      {body.map((b) => <p>{b.text}</p>)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .aim { margin-top: 6rem; }
+  .eyebrow { font-family: var(--font-jbmono); font-size: var(--text-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--c-accent-text); }
+  h2 { margin-top: 0.75rem; max-width: 26ch; font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl)); font-weight: 430; line-height: var(--leading-tight); letter-spacing: -0.02em; }
+  .aim-grid { display: grid; gap: 2rem; margin-top: 2.5rem; }
+  @media (min-width: 900px) { .aim-grid { grid-template-columns: 5fr 6fr; gap: 4rem; } }
+  blockquote { margin: 0; padding-left: 1.25rem; border-left: 3px solid var(--c-accent); }
+  blockquote p { font-size: var(--text-lg); line-height: var(--leading-snug); }
+  cite { display: block; margin-top: 0.75rem; font-family: var(--font-jbmono); font-size: var(--text-xs); font-style: normal; color: var(--c-ink-2); }
+  .aim-body p { color: var(--c-ink-2); max-width: 36rem; }
+</style>

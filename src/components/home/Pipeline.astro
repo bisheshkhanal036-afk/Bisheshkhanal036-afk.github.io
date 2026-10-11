@@ -1,4 +1,5 @@
 ---
+import aims from '../../data/aims.json';
 /**
  * Home: how the projects connect, from rain to people. A line draws across as the section
  * scrolls in (CSS scroll-driven animation; static where unsupported). Icons are decorative.
@@ -33,6 +34,7 @@ const stages = [
         </span>
         <span class="k">{String(i + 1).padStart(2, '0')} · {s.k}</span>
         <p>{s.text}</p>
+        <p class="why">{aims.stages[s.k as keyof typeof aims.stages].text}</p>
         <a href={s.href}>{s.link}</a>
       </li>
     ))}
@@ -60,6 +62,7 @@ const stages = [
   .ic-h path { fill: var(--chart-water-lo); stroke: var(--c-ink); stroke-width: 1.5; }
   .k { font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-accent-text); letter-spacing: 0.04em; }
   p { margin-top: 0.375rem; font-size: var(--text-sm); }
+  .why { margin-top: 0.625rem; padding-left: 0.625rem; border-left: 2px solid var(--c-accent-wash); color: var(--c-ink-2); font-size: var(--text-xs); line-height: 1.5; }
   a { display: inline-block; margin-top: 0.5rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink); text-decoration-color: var(--c-accent); text-underline-offset: 3px; }
 
   @supports (animation-timeline: view()) {
