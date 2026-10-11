@@ -78,12 +78,11 @@ Bishesh: "this can all be found in the CV". Check his own documents before askin
 - C5 8th-semester surveys folded into hanumante-ews as "Field work" + CV line.
 - C6 Kaligandaki author order: Crossref (Roka, Khanal).
 - D1 Bagmati service area: omit (not in CV or statement). D5 FloodHUB repo is public (github.com/bisheshkhanal036-afk/FloodHUBnepal): link it; teammates not named.
-- Rasuwa: statement adds "ice-rock avalanche from Langtang Lirung"; title and status still unknown.
+- Rasuwa letter removed from the site (Bishesh, 2026-10-11). No rasuwa-cascade project page either, unless he asks.
 
 - C2 Narayani: same paper as the CV entry, under review at Journal of Water and Climate Change, first author. Visibility stays minimal (no methods, figure or repo link) until Bishesh says otherwise.
 - Author lists: not shown anywhere. Each publication shows Bishesh's role (first author / co-author).
 - Bagmati result numbers (buildings, % isolated, route lengthening, service area): never shown while under review.
 
 ## Still open
-- Rasuwa letter title and submission status.
 - Duplicate Coursera credential URL for two certifications (CV p.2).
