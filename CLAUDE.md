@@ -86,7 +86,8 @@ Bishesh's voice: concise, plain statements. At most two em dashes on the whole s
 
 ## Git
 - Conventional commits after each working milestone. **Do not push, change Pages settings or create repos without Bishesh's confirmation.**
-- The live site is still the legacy single page (deployed from branch). Pushing Astro source to `main` before switching Pages to "GitHub Actions" would break the live site.
+- Live since 2026-10-11. Pages source is "GitHub Actions" (`build_type: workflow`); every push to `main` deploys via `.github/workflows/deploy.yml`. Pushing is deploying, so still confirm with Bishesh first.
+- `gh` is installed at `C:\Program Files\GitHub CLI\gh.exe` (not on Git Bash PATH) and logged in as bisheshkhanal036-afk.
 
 ## Decisions (2026-10-11)
 Bishesh: "this can all be found in the CV". Check his own documents before asking. Sources beyond cv.pdf: `content/source/research-statement.docx` (11 Oct 2026).
