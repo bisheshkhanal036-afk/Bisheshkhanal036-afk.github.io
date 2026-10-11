@@ -1,0 +1,27 @@
+{
+  "name": "bishesh-khanal-site",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "check": "node scripts/check.mjs && astro check",
+    "check:dev": "node scripts/check.mjs --allow-placeholders && astro check",
+    "build": "npm run check && astro build",
+    "build:preview": "npm run check:dev && astro build",
+    "preview": "astro preview",
+    "verify-doi": "node scripts/verify-doi.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.8",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
+  }
+}
