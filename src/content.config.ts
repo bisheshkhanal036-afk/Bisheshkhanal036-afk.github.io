@@ -107,16 +107,16 @@ const projects = defineCollection({
     stack: z.array(z.string()).default([]),
     facts: z.array(fact).default([]),
     interests: z.array(reference('interests')).default([]),
-    figure: z
-      .object({
-        component: z.string(),
-        number: z.number(),
-        title: z.string(),
-        caption: z.string(),
-        data: z.string(),
-        dataStatus: z.enum(['observed', 'simulated', 'schematic']),
-      })
-      .optional(),
+    /** Figure components shown on the case study, in order. Captions live in the components. */
+    figures: z
+      .array(
+        z.object({
+          component: z.enum(['RaceFigure', 'IsolationFigure', 'SwipeFigure', 'TwoModelsFigure', 'LayersFigure']),
+          /** Set while the figure runs on synthetic stand-in data: what real data replaces it. */
+          awaiting: z.string().optional(),
+        }),
+      )
+      .default([]),
     links: z.array(link).default([]),
     visibility,
     featured: z.boolean().default(false),

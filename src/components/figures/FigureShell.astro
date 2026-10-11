@@ -14,12 +14,15 @@ interface Props {
   data: string;
   status: 'observed' | 'simulated' | 'schematic';
   description: string;
+  /** Data generated in code as a stand-in until the project's real data is supplied. */
+  synthetic?: boolean;
   class?: string;
 }
-const { id, number, title, caption, data, status, description, class: className } = Astro.props;
+const { id, number, title, caption, data, status, description, synthetic = false, class: className } = Astro.props;
 ---
 
 <figure class:list={['fig', className]} id={id} data-figure aria-labelledby={`${id}-cap`}>
+  {synthetic && <p class="fig-synthetic">Synthetic stand-in, not project results</p>}
   <div class="fig-graphic">
     <slot />
   </div>
@@ -51,6 +54,16 @@ const { id, number, title, caption, data, status, description, class: className 
 
 <style is:global>
   .fig { margin: 0; }
+  .fig-synthetic {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border: 1px dashed var(--c-rule-strong);
+    font-family: var(--font-jbmono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    color: var(--c-ink);
+  }
   .fig-graphic svg { display: block; width: 100%; height: auto; overflow: visible; }
   .fig-controls {
     display: flex;

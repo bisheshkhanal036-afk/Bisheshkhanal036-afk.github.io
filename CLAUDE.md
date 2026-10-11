@@ -35,6 +35,10 @@ Lighthouse: `CHROME_PATH=<playwright chromium> npx lighthouse@12 <url> --form-fa
 - `gsap.matchMedia` with a conditions object runs only when some condition matches: always include a condition for every viewport.
 - Cleanup goes through `onTeardown()` in `src/lib/motion/lifecycle.ts`.
 - Fig. 1 (home, "Rain becomes river"): `src/lib/hydro/scs.ts` + `src/data/hero-schematic.json`. Schematic.
+- Scroll-scrubbed figures use `mountScrub()` (`src/lib/motion/scrub.ts`); ScrollTrigger start/end are wrapped in `clamp()` so figures on screen at load start at frame 0.
+- Figs. 2–6 run on **synthetic stand-in data** (Bishesh, 2026-10-11: "make it with a placeholder"). Generators: `src/lib/schematic/` (seeded noise, Bagmati world with real BFS reachability, FloodHUB layers). Each carries `synthetic` in FigureShell ("Synthetic stand-in, not project results"), "Status: schematic", and an `awaiting:` note in the project frontmatter, which `check.mjs` lists in PLACEHOLDERS.md (non-blocking). Never label a synthetic series "observed"; never show skill metrics or Bagmati counts on synthetic data.
+  - Fig. 2 Race (hanumante-ews), Fig. 3 Isolation + Fig. 4 Swipe (bagmati-evacuation), Fig. 5 Two models (kaligandaki-preprint), Fig. 6 Layers (floodhub; data fetched from `/figures/floodhub-layers.json`).
+- Verify figures with `node scripts/verify/figures.mjs [base] [width]` (viewport captures; element screenshots scroll the page and move the scrub).
 
 ## Content model (`src/content.config.ts`)
 - `profile` (`src/content/profile.json`), `cv` (`src/content/cv/*.json`, one file per section), `publications` (`src/content/publications/*.json`), `projects` (`src/content/projects/*.md`), `interests` (`src/content/interests.json`).

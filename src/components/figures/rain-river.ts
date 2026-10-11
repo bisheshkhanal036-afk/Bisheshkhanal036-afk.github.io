@@ -107,7 +107,7 @@ export async function mountRainRiver(fig: HTMLElement) {
       ? (scroller.classList.add('is-scrub'),
         ScrollTrigger.create({ trigger: scroller, start: 'top top', end: 'bottom bottom', scrub: 0.4,
           onUpdate: (self) => { stopPlay(); setClock(self.progress * T); } }))
-      : ScrollTrigger.create({ trigger: svg, start: 'top 85%', end: 'bottom 35%', scrub: 0.4,
+      : ScrollTrigger.create({ trigger: svg, start: 'clamp(top 85%)', end: 'clamp(bottom 35%)', scrub: 0.4,
           onUpdate: (self) => { stopPlay(); setClock(self.progress * T); } });
     return () => {
       st.kill();

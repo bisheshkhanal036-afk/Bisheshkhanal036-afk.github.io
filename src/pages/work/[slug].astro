@@ -6,6 +6,13 @@
 import Base from '../../layouts/Base.astro';
 import { render } from 'astro:content';
 import { listedProjects, listedInterests, listedPublications, statusLine } from '../../lib/content';
+import RaceFigure from '../../components/figures/RaceFigure.astro';
+import IsolationFigure from '../../components/figures/IsolationFigure.astro';
+import SwipeFigure from '../../components/figures/SwipeFigure.astro';
+import TwoModelsFigure from '../../components/figures/TwoModelsFigure.astro';
+import LayersFigure from '../../components/figures/LayersFigure.astro';
+
+const FIGURES = { RaceFigure, IsolationFigure, SwipeFigure, TwoModelsFigure, LayersFigure };
 
 export async function getStaticPaths() {
   const projects = await listedProjects();
@@ -39,6 +46,15 @@ const fmtFact = (f: (typeof d.facts)[number]) => `${f.value}${f.unit ? (f.unit =
         <div><dt>Period</dt><dd>{d.period}</dd></div>
       </dl>
     </header>
+
+    {isPublic && d.figures.length > 0 && (
+      <div class="cs-figures">
+        {d.figures.map((f) => {
+          const Fig = FIGURES[f.component];
+          return <Fig />;
+        })}
+      </div>
+    )}
 
     {isPublic && (
       <div class="cs-grid">
@@ -83,7 +99,7 @@ const fmtFact = (f: (typeof d.facts)[number]) => `${f.value}${f.unit ? (f.unit =
               <h2>Links</h2>
               <ul class="ilinks">
                 {d.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
-                {pubs.map((p) => <li><a href={`/publications/#${p.id}`}>Manuscript: {statusLine(p.data)}</a></li>)}
+                {pubs.filter((p) => !d.links.some((l) => p.data.doi && l.href.includes(p.data.doi))).map((p) => <li><a href={`/publications/#${p.id}`}>Manuscript: {statusLine(p.data)}</a></li>)}
               </ul>
             </section>
           )}
@@ -121,7 +137,8 @@ const fmtFact = (f: (typeof d.facts)[number]) => `${f.value}${f.unit ? (f.unit =
   }
   .cs-meta dd { margin: 0.25rem 0 0; }
 
-  .cs-grid { display: grid; gap: 3rem; margin-top: 2.5rem; }
+  .cs-figures { display: grid; gap: 4.5rem; margin-top: 2.5rem; max-width: 60rem; }
+  .cs-grid { display: grid; gap: 3rem; margin-top: 3.5rem; }
   @media (min-width: 900px) { .cs-grid { grid-template-columns: 7fr 4fr; gap: 4rem; } }
   .cs-summary { font-size: var(--text-lg); line-height: var(--leading-snug); max-width: 38rem; }
   .prose { margin-top: 1.5rem; max-width: 38rem; }

@@ -44,6 +44,13 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
+// Figures running on synthetic stand-in data: listed, but they do not block the build.
+const standIns = walk(join(root, 'src/content/projects')).flatMap((file) =>
+  [...readFileSync(file, 'utf8').matchAll(/component:\s*(\w+),\s*awaiting:\s*"([^"]+)"/g)].map(
+    (m) => `- ${relative(root, file).replaceAll('\\', '/')}: **${m[1]}** awaits ${m[2]}`,
+  ),
+);
+
 const md = [
   '# Placeholders',
   '',
@@ -52,6 +59,13 @@ const md = [
   hits.length ? `${hits.length} open item(s).` : 'None. Production build allowed.',
   '',
   ...hits.map((h) => `- [${h.file}:${h.line}](${h.file}#L${h.line}) \`${h.text.slice(0, 160).replaceAll('`', "'")}\``),
+  '',
+  '## Schematic figures on synthetic data',
+  '',
+  'Non-blocking (Bishesh, 2026-10-11: "make it with a placeholder"). Each is captioned "Status: schematic"',
+  'and tagged "Synthetic stand-in, not project results". Replace with real data:',
+  '',
+  ...(standIns.length ? standIns : ['None.']),
   '',
 ].join('\n');
 writeFileSync(join(root, 'PLACEHOLDERS.md'), md);

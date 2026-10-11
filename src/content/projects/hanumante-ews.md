@@ -12,6 +12,8 @@ facts:
   - { label: Physical model runtime, value: "over 1", unit: h, source: brief 2026-10-11 }
   - { label: Surrogate skill (mean NSE), value: "> 0.9", qualifier: current results, source: brief 2026-10-11 }
 interests: [surrogate-modelling, early-warning]
+figures:
+  - { component: RaceFigure, awaiting: "event CSV, river centreline, 21 cross-section locations, depth grid timesteps (content/source/data/hanumante/)" }
 visibility: public
 featured: true
 order: 1
