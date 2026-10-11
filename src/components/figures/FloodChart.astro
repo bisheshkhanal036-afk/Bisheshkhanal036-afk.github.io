@@ -1,0 +1,25 @@
+---
+/** Success-rate curve (share of observed flooding captured vs share of area ranked by risk). */
+interface Props { curve: number[][]; auc: number; label: string }
+const { curve, auc, label } = Astro.props;
+const W = 280, H = 190, x0 = 34, x1 = W - 8, y0 = 10, y1 = H - 30;
+const X = (v: number) => x0 + v * (x1 - x0);
+const Y = (v: number) => y1 - v * (y1 - y0);
+const d = 'M' + curve.map(([a, b]) => `${X(a).toFixed(1)},${Y(b).toFixed(1)}`).join('L');
+---
+
+<svg class="fc" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${label}: success-rate curve, AUC ${auc}`}>
+  <line class="chart-grid" x1={X(0)} y1={Y(0)} x2={X(1)} y2={Y(1)} stroke-dasharray="3 3" />
+  <line class="chart-axis" x1={x0} x2={x1} y1={y1} y2={y1} />
+  <line class="chart-axis" x1={x0} x2={x0} y1={y0} y2={y1} />
+  {[0, 0.5, 1].map((v) => <text class="chart-label" x={x0 - 6} y={Y(v) + 4} text-anchor="end">{v}</text>)}
+  {[0, 0.5, 1].map((v) => <text class="chart-label" x={X(v)} y={y1 + 14} text-anchor="middle">{v}</text>)}
+  <text class="chart-label" x={x1} y={H - 2} text-anchor="end">share of basin, highest risk first</text>
+  <path d={d} class="fc-line" />
+  <text class="chart-label strong" x={X(0.55)} y={Y(0.25)}>AUC {auc.toFixed(2)}</text>
+</svg>
+
+<style>
+  .fc { width: 100%; max-width: 22rem; height: auto; }
+  .fc-line { fill: none; stroke: var(--chart-model); stroke-width: 2.25; }
+</style>

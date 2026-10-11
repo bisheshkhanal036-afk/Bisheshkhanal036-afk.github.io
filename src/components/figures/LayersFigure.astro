@@ -1,100 +1,228 @@
 ---
 /**
- * Fig. 6, FloodHUB: "Layers to risk". Real data from a cached FloodHUB run for the upper
- * Bagmati basin (HydroBASINS level 8). Eleven reclassified criterion layers stand in an
- * exploded stack; scrolling collapses them into the AHP-weighted risk surface. The sliders
- * start at that run's weights (recovered exactly from the cached surface) and recompute
- * the surface in the browser with FloodHUB's own formula. No backend calls.
+ * Fig. 6, FloodHUB: the tool's eight steps on one real run (upper Bagmati basin,
+ * HydroBASINS level 8). One map stage changes with the step:
+ *   1 Area of interest   basin outline
+ *   2 Criteria           eleven reclassified layers fan out in a stack
+ *   3 Weighting          the run's AHP weights (sliders, live)
+ *   4 Compute            the stack collapses into the risk surface
+ *   5 Vulnerability      the map flattens to hazard classes; per-class area, people, buildings
+ *   6 Validate           success-rate curve against BIPAD flood incidents
+ *   7 Compare to METEOR  success-rate curve and flooded share against METEOR hazard
+ *   8 Shelters           building exposure grid and the shelter screening funnel
+ * All numbers come from steps.json / layers.json (FloodHUB's own functions on its cache).
+ * Without JS the steps read as an ordered list and the map shows hazard classes.
  */
 import FigureShell from './FigureShell.astro';
-import { buildLayers } from '../../lib/schematic/floodhub-layers';
+import FloodChart from './FloodChart.astro';
+import { buildLayers, HAZARD_RGB } from '../../lib/schematic/floodhub-layers';
 
-const { W, H, criteria, layerPngs, riskPng, meta } = buildLayers();
-const pct = (w: number) => `${(w * 100).toFixed(1)}%`;
-const top3 = criteria.slice(0, 3).map((c) => `${c.label.toLowerCase()} (${pct(c.weight)})`).join(', ');
+const { W, H, criteria, layerPngs, riskPng, maskPng, hazardPng, exposurePng, meta, steps } = buildLayers();
+const pct = (w: number, d = 1) => `${(w * 100).toFixed(d)}%`;
+const int = (n: number) => n.toLocaleString('en-GB');
 const cached = meta.source.match(/cached (\d{4}-\d{2}-\d{2})/)?.[1] ?? '';
+const zonal = steps.report.zonal.filter((z) => z.areaKm2 > 0);
+const areaKm2 = zonal.reduce((a, z) => a + z.areaKm2, 0);
+const val = steps.validation[0];
+const met = steps.meteor;
+const sh = steps.shelters;
+const eligible = sh.totalBuildings - sh.excludedTooSmall - sh.excludedHighHazard - sh.excludedNoData;
+const rgb = (c: number[]) => `rgb(${c.join(' ')})`;
+const maxFrac = Math.max(...met.byClass.map((b) => b.fraction ?? 0));
+
+const STEPS = [
+  'Area of interest', 'Criteria', 'Weighting', 'Compute',
+  'Vulnerability report', 'Validate', 'Compare to METEOR', 'Shelters',
+];
 
 const description =
-  `Eleven flood-susceptibility criteria for the upper Bagmati basin, each reclassified into five classes, are stacked and combined into one risk surface by a weighted sum. ` +
-  `The weights are those of a FloodHUB run from ${cached}; the three largest are ${top3}. ` +
-  `Risk is highest along the valley floor and river corridors and lowest on the forested ridges. ` +
-  `Moving a slider recomputes the surface with FloodHUB's formula, R = (sum of weight times class − 1) / 4. Layers are averaged to ${meta.aoi.resolutionM} m cells for the web.`;
+  `FloodHUB's eight steps on one run for the upper Bagmati basin (${areaKm2.toFixed(0)} km²). ` +
+  `Eleven criteria are reclassified into five classes and combined with AHP weights; distance to river (${pct(criteria[0].weight)}) and elevation (${pct(criteria[1].weight)}) weigh most. ` +
+  `The risk surface is split into hazard classes: ${zonal.map((z) => `${z.label} ${z.areaKm2.toFixed(0)} km² with ${int(z.buildings)} buildings`).join('; ')}. No cell reaches Very High. ` +
+  `Against the ${val.observedCells} grid cells holding BIPAD flood incidents (2011 to 2026) the success-rate AUC is ${val.auc}; against METEOR's 1-in-100-year river flood it is ${met.auc}, and the flooded share rises from Low to High class. ` +
+  `Of ${int(sh.totalBuildings)} buildings, ${int(eligible)} pass the shelter screens and ${sh.candidates} are shortlisted.`;
 ---
 
 <FigureShell
   id="fig-layers"
   number={6}
-  title="Layers to risk"
-  caption={`Eleven criterion layers for the upper Bagmati basin (HydroBASINS level 8, ID ${meta.aoi.hybasId}), each reclassified to five susceptibility classes, collapse into one flood-risk surface by AHP-weighted sum. The sliders start at the weights of a FloodHUB run from ${cached}; move them to recompute the surface in your browser. Shown at ${meta.aoi.resolutionM} m cells; FloodHUB computes at ${meta.grid.nativeResolutionM} m.`}
-  data={`FloodHUB computation (${cached}): Copernicus GLO-30 DEM, ESA WorldCover 2021, Sentinel-2 NDVI, CHIRPS, HRSL population, OpenStreetMap; credits below`}
+  title="Eight steps, one basin"
+  caption={`FloodHUB's workflow run end to end on the upper Bagmati basin (HydroBASINS level 8, ID ${meta.aoi.hybasId}). Scroll, or press a step, to move through it. Weights are those of the run from ${cached}; you can change them at steps 3 and 4, while steps 5 to 8 show the run's own results. Maps are averaged to ${meta.aoi.resolutionM} m cells; FloodHUB works at ${meta.grid.nativeResolutionM} m.`}
+  data={`FloodHUB run of ${cached} (Copernicus GLO-30, ESA WorldCover, Sentinel-2, CHIRPS, HRSL, OpenStreetMap, BIPAD, METEOR); credits below`}
   status="simulated"
   description={description}
   class="ly"
 >
-  <div class="ly-grid">
-    <div class="ly-stage" data-ly-stage>
-      <div class="ly-stack" data-ly-stack style={`aspect-ratio:${W}/${H}`}>
-        {layerPngs.map((_, i) => (
-          <img class="ly-layer" width={W} height={H} alt="" data-ly-layer={i} style={`--k:${criteria.length - i}`} />
+  <div class="ly-pin" data-ly-pin>
+    <div class="ly-sticky">
+      <ol class="ly-rail" aria-label="FloodHUB steps">
+        {STEPS.map((s, i) => (
+          <li><button type="button" data-ly-go={i} aria-current={i === 7 ? 'step' : undefined}><span class="n">{i + 1}</span><span class="t">{s}</span></button></li>
         ))}
-        <img class="ly-risk" src={riskPng} width={W} height={H} alt="" data-ly-risk-img />
-        <canvas class="ly-risk ly-canvas" width={W} height={H} data-ly-canvas aria-hidden="true"></canvas>
-      </div>
-    </div>
+      </ol>
 
-    <div class="ly-side">
-      <fieldset class="ly-weights" data-ly-weights>
-        <legend>Criteria, top of stack first, with weights</legend>
-        {criteria.map((c, i) => (
-          <label data-ly-label={i}>
-            <span class="ly-wname">{c.label}</span>
-            <input type="range" min="0" max="1000" value={Math.round(c.weight * 1000)} data-ly-w={i} aria-label={`Weight for ${c.label}`} />
-            <output data-ly-wout={i}>{pct(c.weight)}</output>
-          </label>
-        ))}
-      </fieldset>
-      <button type="button" class="ly-reset" data-ly-reset>Reset to the run's weights</button>
-      <div class="ly-scale" aria-hidden="true"><span>lower risk</span><span class="ly-ramp"></span><span>higher risk</span></div>
+      <div class="ly-grid">
+        <div class="ly-stage">
+          <div class="ly-stack" data-ly-stack style={`aspect-ratio:${W}/${H}`}>
+            <img class="ly-plane ly-mask" src={maskPng} width={W} height={H} alt="" data-ly-mask />
+            {layerPngs.map((_, i) => (
+              <img class="ly-plane ly-layer" width={W} height={H} alt="" data-ly-layer={i} style={`--k:${criteria.length - i}`} />
+            ))}
+            <canvas class="ly-plane ly-canvas" width={W} height={H} data-ly-canvas aria-hidden="true"></canvas>
+            <img class="ly-plane ly-risk" src={riskPng} width={W} height={H} alt="" data-ly-risk />
+            <img class="ly-plane ly-hazard" src={hazardPng} width={W} height={H} alt="Hazard classes across the basin" data-ly-hazard />
+            <img class="ly-plane ly-expo" src={exposurePng} width={W} height={H} alt="" data-ly-expo />
+          </div>
+          <div class="ly-key ly-expo-key" data-ly-expokey aria-hidden="true"><span>0%</span><span class="ly-expo-ramp"></span><span>100% of buildings in High hazard</span></div>
+          <ul class="ly-key" data-ly-key>
+            {zonal.map((z) => <li><span class="sw" style={`background:${rgb(HAZARD_RGB[z.class])}`}></span>{z.label}</li>)}
+          </ul>
+        </div>
+
+        <ol class="ly-panels" data-ly-panels>
+          <li class="ly-panel" data-ly-panel="0">
+            <h3>1 · Area of interest</h3>
+            <p>A HydroBASINS level 8 basin (ID {meta.aoi.hybasId}) on the upper Bagmati that contains the Kathmandu Valley, about {areaKm2.toFixed(0)} km². FloodHUB also accepts a drawn rectangle or a district.</p>
+          </li>
+          <li class="ly-panel" data-ly-panel="1">
+            <h3>2 · Criteria</h3>
+            <p>Eleven factors, each fetched for the basin on a 10 m grid and reclassified from 1 (least flood-prone) to 5 (most).</p>
+            <ol class="ly-crit">{criteria.map((c) => <li>{c.label}</li>)}</ol>
+          </li>
+          <li class="ly-panel" data-ly-panel="2">
+            <h3>3 · Weighting</h3>
+            <p>AHP pairwise comparison turns judgement into weights. These are the run's; move one to recompute the surface.</p>
+            <fieldset class="ly-weights" data-ly-weights>
+              <legend class="sr-only">Criterion weights</legend>
+              {criteria.map((c, i) => (
+                <label data-ly-label={i}>
+                  <span class="ly-wname">{c.label}</span>
+                  <input type="range" min="0" max="1000" value={Math.round(c.weight * 1000)} data-ly-w={i} aria-label={`Weight for ${c.label}`} />
+                  <output data-ly-wout={i}>{pct(c.weight)}</output>
+                </label>
+              ))}
+            </fieldset>
+            <button type="button" class="ly-reset" data-ly-reset>Reset to the run's weights</button>
+          </li>
+          <li class="ly-panel" data-ly-panel="3">
+            <h3>4 · Compute</h3>
+            <p>Each cell's risk is the weighted sum of its classes, scaled to 0–1: R = (Σ wᵢ·classᵢ − 1) / 4. Across this basin R runs from {meta.risk.range[0].toFixed(2)} to {meta.risk.range[1].toFixed(2)}.</p>
+            <div class="ly-scale" aria-hidden="true"><span>lower</span><span class="ly-ramp"></span><span>higher</span></div>
+          </li>
+          <li class="ly-panel" data-ly-panel="4">
+            <h3>5 · Vulnerability report</h3>
+            <p>The surface is cut into hazard classes, and every OpenStreetMap building and population cell is tagged with its class.</p>
+            <table class="ly-table">
+              <thead><tr><th>Class</th><th>km²</th><th>People</th><th>Buildings</th></tr></thead>
+              <tbody>{zonal.map((z) => <tr><td><span class="sw" style={`background:${rgb(HAZARD_RGB[z.class])}`}></span>{z.label}</td><td>{z.areaKm2.toFixed(0)}</td><td>{int(z.population)}</td><td>{int(z.buildings)}</td></tr>)}</tbody>
+            </table>
+            <p class="ly-note">No cell reaches Very High in this run. Population from HRSL.</p>
+          </li>
+          <li class="ly-panel" data-ly-panel="5">
+            <h3>6 · Validate</h3>
+            <p>Checked against flood incidents recorded on the BIPAD Portal, 2011 to 2026: {val.observedCells} grid cells in this basin hold at least one. A curve above the diagonal means they fall where risk is ranked high.</p>
+            <FloodChart curve={val.curve} auc={val.auc} label={val.label} />
+          </li>
+          <li class="ly-panel" data-ly-panel="6">
+            <h3>7 · Compare to METEOR</h3>
+            <p>Against METEOR's modelled {met.returnPeriod.replace('1in', '1-in-')}-year river flood (fluvial, with defences). Share of each class that METEOR floods:</p>
+            <ul class="ly-bars">
+              {met.byClass.filter((b) => b.fraction !== null && b.pixels > 0).map((b) => (
+                <li><span class="lb">{b.label}</span><span class="bar"><span style={`width:${(((b.fraction ?? 0) / maxFrac) * 100).toFixed(1)}%;background:${rgb(HAZARD_RGB[b.class])}`}></span></span><span class="v">{pct(b.fraction ?? 0, 2)}</span></li>
+              ))}
+            </ul>
+            <FloodChart curve={met.curve} auc={met.auc} label="METEOR 1-in-100-year fluvial (defended) flood" />
+          </li>
+          <li class="ly-panel" data-ly-panel="7">
+            <h3>8 · Shelters</h3>
+            <p>Buildings are screened for size, hazard and data, then ranked for safety, access and service. The map shows the share of buildings in High hazard per cell.</p>
+            <ul class="ly-funnel">
+              <li><span class="v">{int(sh.totalBuildings)}</span> buildings in the basin</li>
+              <li><span class="v">−{int(sh.excludedTooSmall)}</span> under {sh.minFootprintM2} m² footprint</li>
+              <li><span class="v">−{int(sh.excludedHighHazard)}</span> in high hazard</li>
+              <li><span class="v">−{int(sh.excludedNoData)}</span> missing data</li>
+              <li class="tot"><span class="v">{int(eligible)}</span><span>eligible, of which <strong>{sh.candidates}</strong> are shortlisted</span></li>
+            </ul>
+            <p class="ly-note">Sites are not mapped here: individual buildings stay off this site.</p>
+          </li>
+        </ol>
+      </div>
     </div>
   </div>
   <details class="fig-desc ly-credits">
     <summary>Data credits</summary>
-    <ul>{meta.attribution.map((a: string) => <li>{a}</li>)}</ul>
+    <ul>{steps.credits.map((a: string) => <li>{a}</li>)}</ul>
   </details>
 </FigureShell>
 
 <style is:global>
-  .ly-grid { display: grid; gap: 2rem; align-items: center; }
-  @media (min-width: 760px) { .ly-grid { grid-template-columns: 1fr 1fr; } }
-  .ly-stage { perspective: 1200px; display: grid; place-items: center; min-height: 380px; }
-  .ly-stack { position: relative; width: min(52vw, 250px); transform-style: preserve-3d; transform: rotateX(56deg) rotateZ(-38deg); }
-  .ly-layer, .ly-risk {
-    position: absolute; inset: 0; width: 100%; height: 100%;
-    image-rendering: pixelated;
-    transform: translateZ(calc(var(--k, 0) * var(--gap, 0px)));
+  .ly-rail { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; margin-bottom: 1.25rem; background: var(--c-paper); }
+  .ly-rail button {
+    display: grid; gap: 0.125rem; width: 100%; height: 100%; padding: 0.375rem 0.375rem 0.5rem;
+    border: 0; border-top: 3px solid var(--c-rule); background: transparent; text-align: left; cursor: pointer;
+    font-family: var(--font-jbmono); color: var(--c-ink-2);
+    transition: border-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
   }
-  .ly-risk { --k: 0; }
-  .ly-canvas { opacity: 0; }
-  .ly.is-live .ly-canvas { opacity: var(--risk-o, 1); }
-  .ly.is-live [data-ly-risk-img] { opacity: 0; }
-  /* Exploded state with JS; without JS the combined risk surface shows alone. */
-  .js .ly-stack { --gap: 20px; }
-  .ly-layer { opacity: 0; }
-  .js .ly-layer { opacity: 1; }
+  .ly-rail .n { font-size: var(--text-xs); }
+  .ly-rail .t { font-size: 0.6875rem; line-height: 1.25; }
+  .ly-rail button.is-done { border-top-color: var(--c-rule-strong); }
+  .ly-rail button[aria-current='step'] { border-top-color: var(--c-accent); color: var(--c-ink); }
+  @media (max-width: 639px) { .ly-rail .t { display: none; } .ly-rail .n { text-align: center; } }
 
-  .ly-weights { border: 0; padding: 0; display: grid; gap: 0.125rem; }
-  .ly-weights legend { font-family: var(--font-jbmono); font-size: var(--text-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--c-ink-2); margin-bottom: 0.5rem; }
-  .ly-weights label { display: grid; grid-template-columns: 11rem 1fr 3.5rem; align-items: center; gap: 0.75rem; font-size: var(--text-sm); transition: opacity var(--duration-base) var(--ease-out); }
-  .ly-weights input { accent-color: var(--c-accent); min-height: 1.75rem; }
-  .ly-weights input:disabled { opacity: 0.5; }
-  .ly-weights output { font-family: var(--font-jbmono); font-size: var(--text-xs); text-align: right; font-variant-numeric: tabular-nums; }
-  .ly-reset { display: none; margin-top: 0.75rem; padding: 0.25rem 0.625rem; border: 1px solid var(--c-rule-strong); border-radius: var(--radius-xs); background: transparent; color: var(--c-ink); font-family: var(--font-jbmono); font-size: var(--text-xs); cursor: pointer; }
+  .ly-grid { display: grid; gap: 1.5rem; align-items: start; }
+  @media (min-width: 760px) { .ly-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+  .ly-stage { display: grid; place-items: center; perspective: 1200px; min-height: 380px; padding-top: 4.5rem; }
+  .ly-stage > .ly-key { grid-area: auto; }
+  .ly-expo-key { opacity: 0; align-items: center; }
+  .ly-expo-ramp { display: inline-block; width: 6rem; height: 8px; background: linear-gradient(90deg, rgb(236 231 220), rgb(196 146 120), rgb(126 52 40)); }
+  @media (max-width: 759px) { .ly-stage { min-height: 300px; padding-top: 3.5rem; } }
+  .ly-stack {
+    --rx: 0deg; --rz: 0deg;
+    position: relative; width: min(70vw, 340px); transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateZ(var(--rz));
+  }
+  .ly-plane { pointer-events: none; position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; transform: translateZ(calc(var(--k, 0) * var(--gap, 0px))); }
+  .ly-layer, .ly-canvas, .ly-risk, .ly-expo { opacity: 0; }
+  .ly-mask { opacity: 1; }
+  .ly-key { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.25rem 1rem; margin-top: 1rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .ly-key li, .ly-table td:first-child { display: flex; align-items: center; gap: 0.375rem; }
+  .sw { display: inline-block; width: 0.75rem; height: 0.75rem; outline: 1px solid var(--c-rule); }
+
+  .ly-panels { display: grid; gap: 2rem; }
+  .ly-panel h3 { font-family: var(--font-jbmono); font-size: var(--text-sm); font-weight: 500; color: var(--c-accent-text); }
+  .ly-panel p { margin-top: 0.5rem; font-size: var(--text-sm); }
+  .ly-note { color: var(--c-ink-2); font-size: var(--text-xs) !important; }
+  .ly-crit { margin-top: 0.75rem; padding-left: 1.25rem; list-style: decimal; font-size: var(--text-sm); columns: 2; column-gap: 1.5rem; }
+  .ly-weights { margin-top: 0.75rem; border: 0; padding: 0; display: grid; gap: 0.125rem; }
+  .ly-weights label { display: grid; grid-template-columns: 10rem 1fr 3.25rem; align-items: center; gap: 0.5rem; font-size: var(--text-xs); }
+  .ly-weights input { accent-color: var(--c-accent); min-height: 1.5rem; }
+  .ly-weights output { font-family: var(--font-jbmono); text-align: right; font-variant-numeric: tabular-nums; }
+  .ly-reset { display: none; margin-top: 0.5rem; padding: 0.25rem 0.625rem; border: 1px solid var(--c-rule-strong); border-radius: var(--radius-xs); background: transparent; color: var(--c-ink); font-family: var(--font-jbmono); font-size: var(--text-xs); cursor: pointer; }
   .js .ly-reset { display: inline-block; }
-  .ly-scale { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
-  .ly-ramp { flex: 1; height: 8px; background: linear-gradient(90deg, rgb(240 233 218), rgb(219 160 74), rgb(135 86 15), rgb(58 38 12)); outline: 1px solid var(--c-rule); }
+  .ly-scale { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; font-family: var(--font-jbmono); font-size: var(--text-xs); color: var(--c-ink-2); }
+  .ly-ramp { flex: 1; height: 8px; background: linear-gradient(90deg, rgb(240 233 218), rgb(219 160 74), rgb(135 86 15), rgb(58 38 12)); }
+  .ly-table { margin-top: 0.75rem; width: 100%; border-collapse: collapse; font-size: var(--text-xs); font-variant-numeric: tabular-nums; }
+  .ly-table th { text-align: right; font-family: var(--font-jbmono); font-weight: 500; color: var(--c-ink-2); padding-bottom: 0.25rem; border-bottom: 1px solid var(--c-rule); }
+  .ly-table th:first-child { text-align: left; }
+  .ly-table td { padding-block: 0.25rem; text-align: right; border-bottom: 1px dashed var(--c-rule); }
+  .ly-bars { margin: 0.75rem 0; display: grid; gap: 0.375rem; font-size: var(--text-xs); }
+  .ly-bars li { display: grid; grid-template-columns: 5.5rem 1fr 3.5rem; align-items: center; gap: 0.5rem; }
+  .ly-bars .bar { height: 0.75rem; background: var(--c-paper-2); }
+  .ly-bars .bar span { display: block; height: 100%; }
+  .ly-bars .v, .ly-funnel .v { font-family: var(--font-jbmono); text-align: right; font-variant-numeric: tabular-nums; }
+  .ly-funnel { margin-top: 0.75rem; display: grid; gap: 0.25rem; font-size: var(--text-sm); }
+  .ly-funnel li { display: grid; grid-template-columns: 6rem 1fr; gap: 0.75rem; }
+  .ly-funnel .tot { margin-top: 0.25rem; padding-top: 0.375rem; border-top: 1px solid var(--c-ink); }
   .ly-credits ul { margin-top: 0.375rem; padding-left: 1rem; list-style: disc; font-size: var(--text-xs); }
   .ly-credits li + li { margin-top: 0.25rem; }
-  @media (max-width: 520px) { .ly-weights label { grid-template-columns: 1fr 5rem 3rem; } }
+
+  /* With JS: one step at a time. Desktop pins the figure while its eight steps scroll by. */
+  .js .ly-panels { display: grid; }
+  .js .ly-panel { grid-area: 1 / 1; opacity: 0; visibility: hidden; transition: opacity var(--duration-base) var(--ease-out), visibility 0s linear var(--duration-base); }
+  .js .ly-panel.is-on { opacity: 1; visibility: visible; transition: opacity var(--duration-base) var(--ease-out); }
+  .ly-pin.is-pinned { height: 420vh; }
+  .ly-pin.is-pinned .ly-sticky { position: sticky; top: 1.5rem; }
+  @media (max-width: 520px) { .ly-weights label { grid-template-columns: 1fr 5rem 3rem; } .ly-crit { columns: 1; } }
 </style>
 
 <script>

@@ -24,6 +24,8 @@ export interface ScrubOptions {
   trigger?: Element;
   /** Frame shown under reduced motion (and by the build-time fallback). Default 1. */
   restP?: number;
+  /** Link progress to page scroll. Default true. Off: play button and scrubber only. */
+  scroll?: boolean;
 }
 
 export async function mountScrub(o: ScrubOptions) {
@@ -76,7 +78,7 @@ export async function mountScrub(o: ScrubOptions) {
   scrub.addEventListener('input', () => { stop(); set(Number(scrub.value) / 1000); });
 
   let st: ScrollTrigger | null = null;
-  if (!reduce) {
+  if (!reduce && o.scroll !== false) {
     st = ScrollTrigger.create({
       trigger: o.trigger ?? fig.querySelector('.fig-graphic') ?? fig,
       // clamp(): a figure already on screen at load starts at frame 0, not part-way.
@@ -92,7 +94,13 @@ export async function mountScrub(o: ScrubOptions) {
   io.observe(fig);
 
   onTeardown(() => { stop(); st?.kill(); io.disconnect(); });
-  return { set, gsap };
+  /** Move to progress p; when scroll-linked, scroll the page there instead so both stay in step. */
+  const goTo = (p: number) => {
+    stop();
+    if (st) window.scrollTo({ top: st.start + p * (st.end - st.start), behavior: reduce ? 'auto' : 'smooth' });
+    else set(p);
+  };
+  return { set, goTo, gsap };
 }
 
 export const clamp01 = (v: number) => Math.min(1, Math.max(0, v));

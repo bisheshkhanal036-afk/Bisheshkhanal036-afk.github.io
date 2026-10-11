@@ -14,6 +14,8 @@ Requirements: Python 3.11+, `pip install numpy pandas h5py geopandas shapely pil
 | `buildings_to_hexbins.py` | building footprints + hazard class or depth raster | `hexbins.json` (counts per hex per class; **no points**) | Fig. 3 |
 | `raster_to_png.py` | GeoTIFF (DEM, depth, criterion layers) | small 8-bit PNGs, max 128 px | Figs. 2, 6 |
 | `surrogate_csv_to_json.py` | surrogate run folder (`C01`, `C02`, `C05`, `C07` CSVs) | `hanumante/surrogate.json` (one test event, 21 sections, metrics, warning levels) | Fig. 2 (run 2026-10-11 on `GRU_surrogate_leadtime3_12864`, with permission) |
+| `floodhub_cache_to_json.py` | FloodHUB cache (run inside its backend container) | `floodhub/layers.json` (11 criteria, recovered AHP weights, risk) | Fig. 6 (run 2026-10-11) |
+| `floodhub_steps_to_json.py` | FloodHUB cache plus its validate, METEOR and shelter functions (inside the container) | `floodhub/steps.json` (hazard classes, report, validation, METEOR, shelter counts) | Fig. 6 (run 2026-10-11) |
 
 Rules the scripts enforce:
 - Building data leaves only as hex-bin counts; hexes with fewer than `--min-count` (default 5) buildings are merged or dropped, so no single building can be located.
