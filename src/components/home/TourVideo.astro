@@ -1,0 +1,38 @@
+---
+/**
+ * Home: screen recording of FloodHUB (Khola) in use, edited in Remotion (video/).
+ * Click to play; nothing downloads until then (preload="none"). Captions in tour.vtt.
+ */
+---
+
+<section class="tour mx-auto max-w-page px-4 sm:px-8" aria-labelledby="tour-title">
+  <div class="tour-head" data-reveal>
+    <p class="eyebrow">See it running</p>
+    <h2 id="tour-title">FloodHUB, start to finish, in 84 seconds</h2>
+    <p class="lede">A screen recording of the tool on one basin, made on 12 October 2026. Waiting time is cut and some steps are sped up; the video says where.</p>
+  </div>
+  <figure class="tour-fig" data-reveal style="--i:1">
+    <div class="tour-frame">
+      <video controls preload="none" playsinline muted width="1280" height="800" poster="/video/tour-poster.jpg" aria-describedby="tour-cap">
+        <source src="/video/tour.webm" type="video/webm" />
+        <source src="/video/tour.mp4" type="video/mp4" />
+        <track kind="captions" src="/video/tour.vtt" srclang="en" label="English" default />
+        <a href="/video/tour.mp4">Download the video (MP4, 3.9 MB)</a>
+      </video>
+    </div>
+    <figcaption id="tour-cap">
+      Area of interest, criteria, weighting, compute, vulnerability report, validation against BIPAD flood incidents and comparison with METEOR. Equal weights and the app's default class breaks: the app marks this as an illustration of the pipeline, not a validated assessment. Shelter siting is left out because it maps individual buildings.
+    </figcaption>
+  </figure>
+</section>
+
+<style>
+  .tour { margin-top: 7rem; }
+  .eyebrow { font-family: var(--font-jbmono); font-size: var(--text-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--c-accent-text); }
+  h2 { margin-top: 0.5rem; max-width: 24ch; font-size: clamp(var(--text-xl), 3.2vw, var(--text-3xl)); font-weight: 430; line-height: var(--leading-tight); letter-spacing: -0.015em; }
+  .lede { margin-top: 0.75rem; max-width: 40rem; color: var(--c-ink-2); }
+  .tour-fig { margin: 2rem 0 0; }
+  .tour-frame { position: relative; border: 1px solid var(--c-rule-strong); border-radius: var(--radius-sm); overflow: hidden; background: #0d1215; box-shadow: 0 24px 60px -30px rgb(0 0 0 / 0.45); }
+  video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; }
+  figcaption { margin-top: 0.875rem; max-width: 46rem; font-size: var(--text-sm); color: var(--c-ink-2); }
+</style>

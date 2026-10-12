@@ -109,3 +109,9 @@ Bishesh: "this can all be found in the CV". Check his own documents before askin
 
 ## Still open
 - Nothing open.
+
+## Home video (FloodHUB tour)
+- `public/video/tour.{webm,mp4}` + `tour-poster.jpg` + `tour.vtt`, shown by `src/components/home/TourVideo.astro` (click to play, `preload="none"`).
+- Made from a real screen recording of the Khola/FloodHUB app (Docker, localhost:5173): `node video/record.mjs <folder>` (Playwright; logs step times to marks.json). Kept off screen: landing credits (teammates' emails/photos) and step 8 Shelters (individual buildings).
+- Edited in Remotion (`video/`, its own package.json): `remotion/timeline.ts` is the edit list built from marks.json; speed-ups and skipped waiting are stated on screen. Render: `cd video && npx remotion render remotion/index.ts Tour out/tour.mp4 --codec h264 --crf 26`, then ffmpeg to 1280×800 MP4/WebM; `node vtt.mjs` writes captions.
+- No generative video: footage must stay real. The session uses equal weights; the end card repeats the app's own caveat (illustrative, not validated).

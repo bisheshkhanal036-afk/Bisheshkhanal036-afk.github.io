@@ -1,0 +1,21 @@
+{
+  "name": "khola-tour-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio remotion/index.ts",
+    "render": "remotion render remotion/index.ts Tour out/tour.mp4 --codec h264 --crf 25",
+    "render:webm": "remotion render remotion/index.ts Tour out/tour.webm --codec vp9 --crf 34",
+    "poster": "remotion still remotion/index.ts Tour out/poster.jpg --frame 400 --image-format jpeg --jpeg-quality 82"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.534",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.534"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.31",
+    "typescript": "^7.0.2"
+  }
+}

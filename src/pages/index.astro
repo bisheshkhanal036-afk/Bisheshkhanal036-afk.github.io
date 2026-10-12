@@ -7,6 +7,7 @@ import { Image, getImage } from 'astro:assets';
 import headshot from '../assets/headshot.jpg';
 import Stats from '../components/home/Stats.astro';
 import Aim from '../components/home/Aim.astro';
+import TourVideo from '../components/home/TourVideo.astro';
 import Pipeline from '../components/home/Pipeline.astro';
 import ProjectThumb from '../components/home/ProjectThumb.astro';
 import { listedProjects, listedPublications, statusLine } from '../lib/content';
@@ -64,6 +65,8 @@ const person = {
   <Aim />
 
   <Stats />
+
+  <TourVideo />
 
   <Pipeline />
 

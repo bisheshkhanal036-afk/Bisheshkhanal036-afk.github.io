@@ -30,3 +30,12 @@ content/source/
 test-results/
 reports/
 .cvbuild/
+
+# raw screen recordings (large); the edited video in public/video is committed
+video/raw/
+video/node_modules/
+video/out/
+video/take*/
+video/raw-take*/
+video/public/session.webm
+video/vtt.mjs.bak

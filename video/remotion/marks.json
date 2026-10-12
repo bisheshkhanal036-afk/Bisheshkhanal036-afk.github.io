@@ -1,0 +1,92 @@
+{
+  "fps": 25,
+  "width": 1600,
+  "height": 1000,
+  "marks": [
+    {
+      "id": "landing",
+      "label": "Landing",
+      "t": 1.17
+    },
+    {
+      "id": "aoi",
+      "label": "Area of interest",
+      "t": 9.326
+    },
+    {
+      "id": "basins-loading",
+      "label": "Loading basins",
+      "t": 10.11
+    },
+    {
+      "id": "basins-ready",
+      "label": "Basins loaded",
+      "t": 10.113
+    },
+    {
+      "id": "aoi-set",
+      "label": "Basin selected",
+      "t": 12.599
+    },
+    {
+      "id": "criteria",
+      "label": "Criteria",
+      "t": 15.106
+    },
+    {
+      "id": "criteria-done",
+      "label": "Eleven criteria",
+      "t": 27.596
+    },
+    {
+      "id": "weighting",
+      "label": "Weighting",
+      "t": 28.802
+    },
+    {
+      "id": "compute",
+      "label": "Compute",
+      "t": 36.237
+    },
+    {
+      "id": "computed",
+      "label": "Risk surface",
+      "t": 39.945
+    },
+    {
+      "id": "report",
+      "label": "Vulnerability report",
+      "t": 47.544
+    },
+    {
+      "id": "report-done",
+      "label": "Report ready",
+      "t": 119.388
+    },
+    {
+      "id": "validate",
+      "label": "Validate",
+      "t": 131.541
+    },
+    {
+      "id": "validate-done",
+      "label": "Validation result",
+      "t": 138.946
+    },
+    {
+      "id": "meteor",
+      "label": "Compare to METEOR",
+      "t": 146.634
+    },
+    {
+      "id": "meteor-done",
+      "label": "METEOR result",
+      "t": 152.384
+    },
+    {
+      "id": "end",
+      "label": "End",
+      "t": 160.12
+    }
+  ]
+}
