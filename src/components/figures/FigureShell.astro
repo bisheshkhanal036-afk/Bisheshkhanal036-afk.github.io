@@ -16,13 +16,15 @@ interface Props {
   description: string;
   /** Data generated in code as a stand-in until the project's real data is supplied. */
   synthetic?: boolean;
+  /** Overrides the default stand-in tag text. */
+  syntheticLabel?: string;
   class?: string;
 }
-const { id, number, title, caption, data, status, description, synthetic = false, class: className } = Astro.props;
+const { id, number, title, caption, data, status, description, synthetic = false, syntheticLabel, class: className } = Astro.props;
 ---
 
 <figure class:list={['fig', className]} id={id} data-figure aria-labelledby={`${id}-cap`}>
-  {synthetic && <p class="fig-synthetic">Synthetic stand-in, not project results</p>}
+  {synthetic && <p class="fig-synthetic">{syntheticLabel ?? 'Synthetic stand-in, not project results'}</p>}
   <div class="fig-graphic">
     <slot />
   </div>

@@ -24,8 +24,8 @@ function chunk(type: string, data: Uint8Array) {
   return out;
 }
 
-/** rgba: width*height*4 bytes. Returns a data: URI. */
-export function pngDataUri(width: number, height: number, rgba: Uint8ClampedArray | Uint8Array): string {
+/** rgba: width*height*4 bytes. Returns PNG bytes. */
+export function pngBytes(width: number, height: number, rgba: Uint8ClampedArray | Uint8Array): Uint8Array {
   const raw = new Uint8Array((width * 4 + 1) * height);
   for (let y = 0; y < height; y++) {
     raw[y * (width * 4 + 1)] = 0;
@@ -45,5 +45,10 @@ export function pngDataUri(width: number, height: number, rgba: Uint8ClampedArra
   const png = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
   let o = 0;
   for (const p of parts) { png.set(p, o); o += p.length; }
-  return `data:image/png;base64,${Buffer.from(png).toString('base64')}`;
+  return png;
+}
+
+/** rgba: width*height*4 bytes. Returns a data: URI. */
+export function pngDataUri(width: number, height: number, rgba: Uint8ClampedArray | Uint8Array): string {
+  return `data:image/png;base64,${Buffer.from(pngBytes(width, height, rgba)).toString('base64')}`;
 }

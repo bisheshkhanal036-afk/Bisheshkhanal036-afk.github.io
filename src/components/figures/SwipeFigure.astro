@@ -1,7 +1,8 @@
 ---
 /**
- * Fig. 4, Bagmati validation: "Model against satellite". Drag the divider (or use the
- * slider) to compare the modelled extent (left) with the satellite-derived extent (right).
+ * Fig. 4, Bagmati validation, stand-in: two flood extents over the real FloodHUB basin.
+ * Left: the proxy flood at peak (Fig. 3). Right: METEOR's modelled 1-in-100-year river flood
+ * (real, from FloodHUB's cache). Stands in for the model-versus-UNOSAT satellite comparison.
  * Hexes where both agree are shaded the same on both sides. Not scroll-driven.
  */
 import FigureShell from './FigureShell.astro';
@@ -14,24 +15,24 @@ const modelOnly = w.hexes.filter((_, i) => model[i] && !sat[i]);
 const satOnly = w.hexes.filter((_, i) => sat[i] && !model[i]);
 
 const description =
-  'Two flood extents over the same stand-in catchment. Left of the divider is the modelled extent at peak; right of it is a satellite-derived extent. ' +
-  'Hexes flooded in both are shaded the same on both sides; hexes flooded in only one source are drawn in that source\'s colour. ' +
-  'Disagreement sits along the edges of the flood. Both extents here are synthetic.';
+  'Two flood extents over the basin around the Kathmandu Valley. Left of the divider is the proxy flood at its peak, from river corridors and High-hazard zones; right of it is METEOR\'s modelled 1-in-100-year river flood. ' +
+  'Hexes flooded in both are shaded alike on both sides; the rest show where the two disagree. This stands in for the comparison with the UNOSAT satellite extent, which will replace it.';
 ---
 
 <FigureShell
   id="fig-swipe"
   number={4}
-  title="Model against satellite"
-  caption="Drag the divider to compare the modelled flood extent with a satellite-derived extent. Agreement is shaded alike on both sides; the rest shows where each source disagrees."
-  data="synthetic extents; to be replaced with the modelled September 2024 extent and the UNOSAT extent"
+  title="Two flood maps, one basin"
+  caption="Drag the divider to compare the proxy flood with METEOR's modelled 1-in-100-year river flood. Agreement is shaded alike on both sides. On the project page this comparison will be made against the UNOSAT satellite extent."
+  data="proxy flood (Fig. 3) and METEOR FD 1-in-100 via FloodHUB, over the FloodHUB basin and GLO-30 hillshade; to be replaced with the modelled September 2024 extent and the UNOSAT extent"
   status="schematic"
   description={description}
   synthetic
+  syntheticLabel="Stand-in: proxy flood against METEOR, not against UNOSAT"
   class="swipe"
 >
   <div class="swipe-wrap" data-swipe-wrap>
-    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Modelled and satellite flood extents with a movable divider" data-swipe>
+    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Proxy flood and METEOR flood extents with a movable divider" data-swipe>
       <defs>
         <clipPath id="swipe-left"><rect data-clip-l x="0" y="0" width={W} height={H} /></clipPath>
         <clipPath id="swipe-right"><rect data-clip-r x="0" y="0" width={W} height={H} /></clipPath>
@@ -40,41 +41,44 @@ const description =
           <line x1="0" y1="0" x2="0" y2="5" class="sw-agree-line" />
         </pattern>
       </defs>
+      <clipPath id="swipe-basin"><path d={w.outline} /></clipPath>
       <path d={w.outline} class="iso-outline" />
+      <image href="/figures/bagmati-hillshade.png" x="0" y="0" width={W} height={H} preserveAspectRatio="none" opacity="0.5" clip-path="url(#swipe-basin)" />
       <g>{agree.map((h) => <path d={h.d} class="sw-agree" />)}</g>
       <g clip-path="url(#swipe-left)">{modelOnly.map((h) => <path d={h.d} class="sw-model" />)}</g>
       <g clip-path="url(#swipe-right)">{satOnly.map((h) => <path d={h.d} class="sw-sat" />)}</g>
-      <path d={w.river} class="iso-river" />
+      <path d={w.mainRivers} class="iso-river" clip-path="url(#swipe-basin)" />
+      <path d={w.outline} fill="none" stroke="var(--chart-ink)" stroke-width="1.25" />
       <g data-divider transform={`translate(${W / 2} 0)`}>
         <line x1="0" x2="0" y1="0" y2={H} class="sw-div" />
         <circle cx="0" cy={H / 2} r="13" class="sw-knob" />
         <path d={`M-5,${H / 2 - 4}l-4,4l4,4M5,${H / 2 - 4}l4,4l-4,4`} class="sw-arrows" />
       </g>
-      <text class="chart-label strong" x="12" y="20">model</text>
-      <text class="chart-label strong" x={W - 12} y="20" text-anchor="end">satellite</text>
+      <text class="chart-label strong" x="12" y="20">proxy flood</text>
+      <text class="chart-label strong" x={W - 12} y="20" text-anchor="end">METEOR</text>
     </svg>
   </div>
   <label class="swipe-range">
     <span>Divider</span>
-    <input type="range" min="0" max="100" value="50" step="1" data-swipe-range aria-label="Move the divider between model and satellite extents" />
+    <input type="range" min="0" max="100" value="50" step="1" data-swipe-range aria-label="Move the divider between the proxy flood and METEOR extents" />
   </label>
   <ul class="fig-key" aria-hidden="true">
     <li><span class="sw sw-agree-sw"></span>flooded in both</li>
-    <li><span class="sw sw-model-sw"></span>model only</li>
-    <li><span class="sw sw-sat-sw"></span>satellite only</li>
+    <li><span class="sw sw-model-sw"></span>proxy flood only</li>
+    <li><span class="sw sw-sat-sw"></span>METEOR only</li>
   </ul>
 </FigureShell>
 
 <style is:global>
   .swipe-wrap { touch-action: pan-y; cursor: ew-resize; }
-  .swipe .iso-outline { fill: var(--c-paper-2); stroke: var(--chart-label); stroke-width: 1.25; }
-  .swipe .iso-river { fill: none; stroke: var(--chart-water-hi); stroke-width: 2.5; }
+  .swipe .iso-outline { fill: var(--c-paper-2); stroke: none; }
+  .swipe .iso-river { fill: none; stroke: var(--chart-water-hi); stroke-width: 1.6; }
   .sw-agree { fill: url(#swipe-hatch); }
   .sw-agree-bg { fill: color-mix(in srgb, var(--chart-water-hi) 55%, var(--chart-water-lo)); }
   .sw-agree-line { stroke: var(--chart-water-hi); stroke-width: 2; }
   .sw-model { fill: var(--chart-model); }
   .sw-sat { fill: var(--chart-model-2); }
-  [data-hexes] path, .sw-agree, .sw-model, .sw-sat { stroke: var(--c-paper); stroke-width: 0.75; }
+  .sw-agree, .sw-model, .sw-sat { stroke: none; opacity: 0.85; }
   .sw-div { stroke: var(--chart-ink); stroke-width: 2; }
   .sw-knob { fill: var(--c-paper); stroke: var(--chart-ink); stroke-width: 2; }
   .sw-arrows { fill: none; stroke: var(--chart-ink); stroke-width: 1.75; }

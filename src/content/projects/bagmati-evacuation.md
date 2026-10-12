@@ -13,8 +13,8 @@ facts:
   - { label: Recognition, value: "Best Final Year Project, IOE Thapathali, 2026", source: cv.pdf p.2 }
 interests: [exposure-evacuation]
 figures:
-  - { component: IsolationFigure, awaiting: "catchment boundary, depth at a few timesteps, hex-binned building counts per class, service areas, example routes (content/source/data/bagmati/)" }
-  - { component: SwipeFigure, awaiting: "modelled September 2024 extent and UNOSAT extent as simplified polygons (content/source/data/bagmati/)" }
+  - { component: IsolationFigure, awaiting: "manuscript flood depths and evacuation analysis (hex-binned); geography already real from FloodHUB" }
+  - { component: SwipeFigure, awaiting: "modelled September 2024 extent and UNOSAT extent as simplified polygons" }
 visibility: public
 featured: true
 order: 2

@@ -1,9 +1,10 @@
 ---
 /**
- * Fig. 3, Bagmati: "Isolation". Scrub through a flood hydrograph; hexes flood as the
- * stage rises, building hexes that can no longer reach a shelter turn "isolated", the
- * shelter service area contracts and two example routes lengthen. No counts are shown:
- * the manuscript's results stay off the site while it is under review.
+ * Fig. 3, Bagmati: "Isolation". Real geography from FloodHUB (basin, hillshade, OSM rivers
+ * and arterial roads, aggregated building counts); proxy flood along the main rivers and the
+ * strongest High-hazard zones. As the stage rises, building hexes whose cheapest dry route to
+ * a shelter exceeds the travel budget turn "cut off"; the service area contracts and routes
+ * detour. No counts are shown: the manuscript's results stay off the site while under review.
  */
 import FigureShell from './FigureShell.astro';
 import { buildWorld, W, H } from '../../lib/schematic/catchment-world';
@@ -11,7 +12,7 @@ import { pathFrom } from '../../lib/schematic/noise';
 
 const w = buildWorld();
 const rest = w.steps[w.peakStep];
-const cls = { f: 'iso-f', i: 'iso-i', r: 'iso-r', d: 'iso-d' } as const;
+const cls = { f: 'iso-f', i: 'iso-i', r: 'iso-r', d: 'iso-d', o: 'iso-o' } as const;
 
 // Hydrograph strip
 const SH = 120, sx0 = 52, sx1 = W - 16, sTop = 14, sBase = 92;
@@ -19,39 +20,38 @@ const T = w.hydro.flow.length;
 const sx = (t: number) => sx0 + (t / T) * (sx1 - sx0);
 const sy = (q: number) => sBase - (q / w.hydro.peak) * (sBase - sTop);
 const hydroD = pathFrom([[sx(0), sy(0)], ...w.hydro.flow.map((q, i) => [sx(i + 1), sy(q)] as [number, number])]);
-const payload = JSON.stringify({
-  codes: w.steps.map((s) => s.code),
-  service: w.steps.map((s) => s.service),
-  routes: w.steps.map((s) => s.routes),
-  t: w.steps.map((s) => s.t),
-  T,
-  peak: w.peakStep,
-});
+
 
 const description =
-  'A stand-in catchment is tiled with hexagons. As the flood stage rises with the hydrograph, low hexes near the channel flood. ' +
-  'Breadth-first search from three shelters through dry hexes marks which building hexes can still reach safety; the rest become isolated. ' +
-  'The outline of the shelter service area shrinks and two example evacuation routes detour around the water, then recover as the flood recedes. ' +
-  'All data is synthetic and shows the method only; the manuscript results are not shown.';
+  'The basin around the Kathmandu Valley, from FloodHUB, is tiled with hexagons over a hillshade, with OSM rivers and arterial roads. Darker grey hexes hold more buildings. ' +
+  'As a schematic hydrograph rises, water spreads along the main rivers across the valley floor and into the strongest High-hazard zones. ' +
+  `A cost-distance search from ${w.shelters.length} illustrative shelter sites, cheap along arterial roads and dearer off them, marks building hexes whose dry route to a shelter grows too long as cut off. ` +
+  'The service area outline contracts, one example route is lost and another detours, and both recover as the water falls. The flood is a proxy, not the manuscript model, and no result counts are shown.';
 ---
 
 <FigureShell
   id="fig-isolation"
   number={3}
   title="Isolation"
-  caption="Scrub through the flood. Building hexes that keep a dry path to a shelter stay reachable; the rest are isolated. The shelter service area contracts and evacuation routes lengthen. The method follows the manuscript; the geometry and values here are synthetic."
-  data="synthetic catchment, hydrograph and building density; to be replaced with aggregated Bagmati model output"
+  caption="Scrub through the flood. As water spreads along the rivers, building areas whose dry route to a shelter becomes too long are cut off, the shelter service area contracts and evacuation routes detour. The method follows the manuscript; the flood here is a proxy."
+  data="FloodHUB basin, GLO-30 hillshade, OSM rivers and arterial roads, aggregated building counts (real); flood extent is a proxy from river corridors and High-hazard zones; shelters and hydrograph illustrative"
   status="schematic"
   description={description}
   synthetic
+  syntheticLabel="Stand-in: real geography, proxy flood, not the manuscript's model"
   class="iso"
 >
   <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Catchment hex map: flooded, isolated and reachable building areas" data-iso-map>
+    <defs><clipPath id="iso-basin"><path d={w.outline} /></clipPath></defs>
     <path d={w.outline} class="iso-outline" />
+    <image href="/figures/bagmati-hillshade.png" x="0" y="0" width={W} height={H} preserveAspectRatio="none" class="iso-hill" clip-path="url(#iso-basin)" />
+    <path d={w.roads} class="iso-road" clip-path="url(#iso-basin)" />
+    <path d={w.river} class="iso-stream" clip-path="url(#iso-basin)" />
     <g data-hexes>
-      {w.hexes.map((h, i) => <path d={h.d} class={cls[rest.code[i] as keyof typeof cls]} />)}
+      {w.hexes.map((h, i) => <path d={h.d} class={cls[rest.code[i] as keyof typeof cls]} style={`--dn:${w.density[i].toFixed(2)}`} />)}
     </g>
-    <path d={w.river} class="iso-river" />
+    <path d={w.mainRivers} class="iso-river" clip-path="url(#iso-basin)" />
+    <path d={w.outline} class="iso-edge" />
     <path d={w.steps[0].service} class="iso-service-base" />
     <path d={rest.service} class="iso-service" data-service />
     {w.steps[0].routes.map((d) => <path d={d} class="iso-route-base" />)}
@@ -77,36 +77,45 @@ const description =
   <ul class="fig-key" aria-hidden="true">
     <li><span class="sw iso-f-sw"></span>flooded</li>
     <li><span class="sw iso-i-sw"></span>buildings cut off</li>
-    <li><span class="sw iso-r-sw"></span>buildings that can reach a shelter</li>
+    <li><span class="sw iso-r-sw"></span>buildings with a route to a shelter (darker: more buildings)</li>
+    <li><span class="sw iso-o-sw"></span>beyond reach even before the flood</li>
+    <li><span class="sw sw-line iso-road-sw"></span>arterial road</li>
     <li><span class="sw iso-shelter-sw"></span>shelter</li>
     <li><span class="sw sw-line iso-svc-sw"></span>service area</li>
     <li><span class="sw sw-line iso-route-sw"></span>route now, dashed before the flood</li>
   </ul>
-  <script type="application/json" data-iso-data set:html={payload} />
 </FigureShell>
 
 <style is:global>
-  .iso-outline { fill: var(--c-paper-2); stroke: var(--chart-label); stroke-width: 1.25; }
+  .iso-outline { fill: var(--c-paper-2); stroke: none; }
+  .iso-edge { fill: none; stroke: var(--chart-ink); stroke-width: 1.25; }
+  .iso-hill { opacity: 0.55; }
+  .iso-road { fill: none; stroke: var(--c-paper); stroke-width: 1.6; opacity: 0.9; }
+  .iso-stream { fill: none; stroke: var(--chart-water-hi); stroke-width: 0.6; opacity: 0.45; }
+  .iso-river { fill: none; stroke: var(--chart-water-hi); stroke-width: 1.8; }
   .iso-d { fill: transparent; }
-  .iso-f { fill: color-mix(in srgb, var(--chart-water-hi) 75%, var(--chart-water-lo)); }
-  .iso-r { fill: color-mix(in srgb, var(--chart-ink) 22%, var(--c-paper-2)); }
-  .iso-i { fill: var(--chart-model); }
-  [data-hexes] path { stroke: var(--c-paper); stroke-width: 0.75; transition: fill var(--duration-fast) linear; }
-  .iso-river { fill: none; stroke: var(--chart-water-hi); stroke-width: 2.5; }
-  .iso-service { fill: none; stroke: var(--chart-ink); stroke-width: 1.75; }
-  .iso-service-base { fill: none; stroke: var(--chart-ink); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.45; }
-  .iso-route { fill: none; stroke: var(--chart-ink); stroke-width: 2.5; stroke-linejoin: round; }
-  .iso-route-base { fill: none; stroke: var(--chart-ink); stroke-width: 1.25; stroke-dasharray: 4 3; opacity: 0.6; }
+  .iso-f { fill: rgb(47 118 160 / 0.62); }
+  .iso-r { fill: var(--chart-ink); fill-opacity: calc(0.08 + var(--dn, 0) * 0.42); }
+  .iso-o { fill: var(--chart-ink); fill-opacity: 0.05; }
+  .iso-i { fill: #c2541f; fill-opacity: 0.88; }
+  [data-hexes] path { stroke: none; transition: fill var(--duration-fast) linear, fill-opacity var(--duration-fast) linear; }
+  .iso-service { fill: none; stroke: var(--chart-ink); stroke-width: 1.5; stroke-dasharray: 5 3; }
+  .iso-service-base { fill: none; stroke: var(--chart-ink); stroke-width: 0.8; stroke-dasharray: 2 3; opacity: 0.35; }
+  .iso-route { fill: none; stroke: #c2541f; stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round; }
+  .iso-route-base { fill: none; stroke: var(--chart-ink); stroke-width: 1.2; stroke-dasharray: 4 3; opacity: 0.65; }
   .iso-origin { fill: var(--c-paper); stroke: var(--chart-ink); stroke-width: 2; }
   .iso-shelter { fill: var(--chart-ink); stroke: var(--c-paper); stroke-width: 1.5; }
   .iso-hydro { margin-top: 0.5rem; }
   .iso-hline { fill: none; stroke: var(--chart-water-hi); stroke-width: 2; }
-  .iso-cursor { stroke: var(--chart-model); stroke-width: 2; }
-  .iso-f-sw { background: color-mix(in srgb, var(--chart-water-hi) 75%, var(--chart-water-lo)); }
-  .iso-i-sw { background: var(--chart-model); }
-  .iso-r-sw { background: color-mix(in srgb, var(--chart-ink) 22%, var(--c-paper-2)); }
+  .iso-cursor { stroke: #c2541f; stroke-width: 2; }
+  .iso-f-sw { background: rgb(47 118 160 / 0.62); }
+  .iso-i-sw { background: #c2541f; }
+  .iso-r-sw { background: color-mix(in srgb, var(--chart-ink) 35%, var(--c-paper-2)); }
+  .iso-o-sw { background: color-mix(in srgb, var(--chart-ink) 6%, var(--c-paper-2)); }
+  .iso-road-sw { background: var(--c-rule-strong); }
   .iso-shelter-sw { background: var(--chart-ink); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
-  .iso-svc-sw, .iso-route-sw { background: var(--chart-ink); }
+  .iso-svc-sw { background: var(--chart-ink); }
+  .iso-route-sw { background: #c2541f; }
   @media (max-width: 639px) { .iso .chart-label { font-size: 18px; } }
 </style>
 

@@ -16,10 +16,11 @@ Requirements: Python 3.11+, `pip install numpy pandas h5py geopandas shapely pil
 | `surrogate_csv_to_json.py` | surrogate run folder (`C01`, `C02`, `C05`, `C07` CSVs) | `hanumante/surrogate.json` (one test event, 21 sections, metrics, warning levels) | Fig. 2 (run 2026-10-11 on `GRU_surrogate_leadtime3_12864`, with permission) |
 | `floodhub_cache_to_json.py` | FloodHUB cache (run inside its backend container) | `floodhub/layers.json` (11 criteria, recovered AHP weights, risk) | Fig. 6 (run 2026-10-11) |
 | `floodhub_steps_to_json.py` | FloodHUB cache plus its validate, METEOR and shelter functions (inside the container) | `floodhub/steps.json` (hazard classes, report, validation, METEOR, shelter counts) | Fig. 6 (run 2026-10-11) |
+| `floodhub_world_to_json.py` | FloodHUB cache, one basin (inside the container) | `floodhub/world.json` (basin outline, OSM rivers and long roads, GLO-30 hillshade, hexes with risk, High-hazard share, METEOR share, elevation, building counts ≥ 5) | Figs. 3, 4 Bagmati stand-ins (run 2026-10-12) |
 
 Rules the scripts enforce:
 - Building data leaves only as hex-bin counts; hexes with fewer than `--min-count` (default 5) buildings are merged or dropped, so no single building can be located.
-- Geometry is simplified (`--tolerance`) and coordinates are rounded; every output file stays under 200 KB.
+- Geometry is simplified (`--tolerance`) and coordinates are rounded; every output file stays under 200 KB. Exception: `floodhub/world.json` (~0.5 MB) is read only at build time; the site ships a 70 KB hillshade PNG and a JSON of per-step codes instead.
 - Each output carries a `source` field naming the input file and the date it was processed.
 
 

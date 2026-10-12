@@ -1,10 +1,10 @@
 import { mountScrub } from '../../lib/motion/scrub';
 
 interface Data { codes: string[]; service: string[]; routes: string[][]; t: number[]; T: number; peak: number }
-const CLS: Record<string, string> = { f: 'iso-f', i: 'iso-i', r: 'iso-r', d: 'iso-d' };
+const CLS: Record<string, string> = { f: 'iso-f', i: 'iso-i', r: 'iso-r', d: 'iso-d', o: 'iso-o' };
 
-export function mountIsolation(fig: HTMLElement) {
-  const data: Data = JSON.parse(fig.querySelector('[data-iso-data]')!.textContent!);
+export async function mountIsolation(fig: HTMLElement) {
+  const data: Data = await (await fetch('/figures/bagmati-isolation.json')).json();
   const hexes = [...fig.querySelectorAll<SVGPathElement>('[data-hexes] path')];
   const service = fig.querySelector<SVGPathElement>('[data-service]')!;
   const routes = [...fig.querySelectorAll<SVGPathElement>('[data-route]')];

@@ -10,6 +10,6 @@ None. Production build allowed.
 Non-blocking (Bishesh, 2026-10-11: "add synthetic figures for the ones with no real figures"). Each is captioned
 "Status: schematic" and tagged "Synthetic stand-in, not project results". Replace with real data:
 
-- src/content/projects/bagmati-evacuation.md: **IsolationFigure** awaits catchment boundary, depth at a few timesteps, hex-binned building counts per class, service areas, example routes (content/source/data/bagmati/)
-- src/content/projects/bagmati-evacuation.md: **SwipeFigure** awaits modelled September 2024 extent and UNOSAT extent as simplified polygons (content/source/data/bagmati/)
+- src/content/projects/bagmati-evacuation.md: **IsolationFigure** awaits manuscript flood depths and evacuation analysis (hex-binned); geography already real from FloodHUB
+- src/content/projects/bagmati-evacuation.md: **SwipeFigure** awaits modelled September 2024 extent and UNOSAT extent as simplified polygons
 - src/content/projects/kaligandaki-preprint.md: **TwoModelsFigure** awaits preprint PDF or its series, metrics and SHAP values (content/source/kaligandaki-preprint.pdf)
