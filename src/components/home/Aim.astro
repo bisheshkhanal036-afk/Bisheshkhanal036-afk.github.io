@@ -1,22 +1,23 @@
 ---
-/** Home: statement of aim (src/data/aims.json; drafts are flagged until Bishesh approves them). */
+/** Home: statement of aim. Renders only once approved text is in src/data/aims.json (drafts: drafts/aims.json). */
 import aims from '../../data/aims.json';
-const { title, quote, body } = aims.home;
+type Line = { text: string };
+const home = aims.home as null | { title: Line; quote: Line; body: Line[] };
 ---
 
-<section class="aim mx-auto max-w-page px-4 sm:px-8" aria-labelledby="aim-title">
+{home && <section class="aim mx-auto max-w-page px-4 sm:px-8" aria-labelledby="aim-title">
   <p class="eyebrow" data-reveal>The aim</p>
-  <h2 id="aim-title" data-reveal style="--i:1">{title.text}</h2>
+  <h2 id="aim-title" data-reveal style="--i:1">{home.title.text}</h2>
   <div class="aim-grid">
     <blockquote data-reveal style="--i:2">
-      <p>{quote.text}</p>
+      <p>{home.quote.text}</p>
       <cite>From my research statement</cite>
     </blockquote>
     <div class="aim-body" data-reveal style="--i:3">
-      {body.map((b) => <p>{b.text}</p>)}
+      {home.body.map((b) => <p>{b.text}</p>)}
     </div>
   </div>
-</section>
+</section>}
 
 <style>
   .aim { margin-top: 6rem; }

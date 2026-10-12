@@ -89,6 +89,7 @@ Bishesh's voice: concise, plain statements. At most two em dashes on the whole s
 
 ## Git
 - Conventional commits after each working milestone. **Do not push, change Pages settings or create repos without Bishesh's confirmation.**
+- Draft statements of aim wait in `drafts/aims.json` (not built). To publish: move approved entries into `src/data/aims.json` (Aim, Pipeline and case studies render only what is there).
 - Live since 2026-10-11. Pages source is "GitHub Actions" (`build_type: workflow`); every push to `main` deploys via `.github/workflows/deploy.yml`. Pushing is deploying, so still confirm with Bishesh first.
 - `gh` is installed at `C:\Program Files\GitHub CLI\gh.exe` (not on Git Bash PATH) and logged in as bisheshkhanal036-afk.
 

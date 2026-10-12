@@ -1,59 +1,6 @@
 {
-  "source": "Statements of aim. Verbatim lines are from the research statement; drafts await Bishesh's approval.",
-  "home": {
-    "title": {
-      "text": "I want flood warnings in Nepal to reach people in time, and to send them somewhere they can still get to.",
-      "source": "draft 2026-10-12 in Bishesh's voice, TODO: confirm"
-    },
-    "quote": {
-      "text": "A warning only helps if it arrives with enough time and the routes people need are still open.",
-      "source": "research-statement.docx (2026-10-11), verbatim"
-    },
-    "body": [
-      {
-        "text": "My work tries to close that gap. Hydraulic models show where the water will go, and machine-learning surrogates make them fast enough to warn from. Exposure and route analysis then show who gets cut off and where they can still reach shelter.",
-        "source": "draft 2026-10-12 in Bishesh's voice, TODO: confirm"
-      }
-    ]
-  },
-  "stages": {
-    "Rain": {
-      "text": "Design storms and warning thresholds are only as good as what we know about rainfall extremes.",
-      "source": "draft 2026-10-12 in Bishesh's voice, TODO: confirm"
-    },
-    "River": {
-      "text": "Every flood warning starts with a forecast of how much water the river will carry.",
-      "source": "draft 2026-10-12 in Bishesh's voice, TODO: confirm"
-    },
-    "Flood": {
-      "text": "Counting buildings in a floodplain is not enough, because loss of access matters too.",
-      "source": "research-statement.docx (2026-10-11), verbatim"
-    },
-    "Warning": {
-      "text": "Hydraulic models are too slow for real-time warning. A surrogate that answers in seconds can run each time new rain data arrives.",
-      "source": "draft 2026-10-12 in Bishesh's voice, TODO: confirm"
-    },
-    "People": {
-      "text": "A map of who is exposed, and of which shelters stay reachable, turns a warning into an evacuation plan.",
-      "source": "draft 2026-10-12 in Bishesh's voice, TODO: confirm"
-    }
-  },
-  "projects": {
-    "hanumante-ews": {
-      "text": "I want the Hanumante's flood warning to carry the physics of a full 2D model at the speed a warning needs. Trained on the model's own runs, the surrogate returns discharge at every cross-section in seconds.",
-      "source": "draft 2026-10-12 in Bishesh's voice, TODO: confirm"
-    },
-    "bagmati-evacuation": {
-      "text": "Counting buildings in a floodplain is not enough, because loss of access matters too. This work asks which neighbourhoods are cut off in a large flood and how the way out changes, so that evacuation plans and shelters go where people can still reach them.",
-      "source": "draft 2026-10-12 in Bishesh's voice, TODO: confirm"
-    },
-    "kaligandaki-preprint": {
-      "text": "Most of Nepal's rivers have few gauges. Knowing when a machine-learning model can stand in for a process-based one, and why, decides how far flood forecasting can reach into those basins.",
-      "source": "draft 2026-10-12 in Bishesh's voice, TODO: confirm"
-    },
-    "floodhub": {
-      "text": "Few valleys in Nepal have a calibrated hydraulic model. FloodHUB gives planners a first map of where flood risk concentrates and where people could shelter, built from open data they can check.",
-      "source": "draft 2026-10-12 in Bishesh's voice, TODO: confirm"
-    }
-  }
+  "source": "Approved statements of aim only. Drafts awaiting Bishesh's approval live in drafts/aims.json and are not built.",
+  "home": null,
+  "stages": {},
+  "projects": {}
 }

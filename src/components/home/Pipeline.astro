@@ -34,7 +34,7 @@ const stages = [
         </span>
         <span class="k">{String(i + 1).padStart(2, '0')} · {s.k}</span>
         <p>{s.text}</p>
-        <p class="why">{aims.stages[s.k as keyof typeof aims.stages].text}</p>
+        {(aims.stages as Record<string, { text: string }>)[s.k] && <p class="why">{(aims.stages as Record<string, { text: string }>)[s.k].text}</p>}
         <a href={s.href}>{s.link}</a>
       </li>
     ))}
