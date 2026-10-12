@@ -17,10 +17,11 @@ Requirements: Python 3.11+, `pip install numpy pandas h5py geopandas shapely pil
 | `floodhub_cache_to_json.py` | FloodHUB cache (run inside its backend container) | `floodhub/layers.json` (11 criteria, recovered AHP weights, risk) | Fig. 6 (run 2026-10-11) |
 | `floodhub_steps_to_json.py` | FloodHUB cache plus its validate, METEOR and shelter functions (inside the container) | `floodhub/steps.json` (hazard classes, report, validation, METEOR, shelter counts) | Fig. 6 (run 2026-10-11) |
 | `floodhub_world_to_json.py` | FloodHUB cache, one basin (inside the container) | `floodhub/world.json` (basin outline, OSM rivers and long roads, GLO-30 hillshade, hexes with risk, High-hazard share, METEOR share, elevation, building counts ≥ 5) | Figs. 3, 4 Bagmati stand-ins (run 2026-10-12) |
+| `narayani_to_json.py` | Narayani paper folder: `data/processed/station_*.csv`, `rasters_SRTMGL1` (copied into the FloodHUB container) | `narayani/storm.json` (basin, districts, hillshade, gauge rain for one storm window) | Fig. 7 (run 2026-10-12, at Bishesh's request) |
 
 Rules the scripts enforce:
 - Building data leaves only as hex-bin counts; hexes with fewer than `--min-count` (default 5) buildings are merged or dropped, so no single building can be located.
-- Geometry is simplified (`--tolerance`) and coordinates are rounded; every output file stays under 200 KB. Exception: `floodhub/world.json` (~0.5 MB) is read only at build time; the site ships a 70 KB hillshade PNG and a JSON of per-step codes instead.
+- Geometry is simplified (`--tolerance`) and coordinates are rounded; every output file stays under 200 KB. Exceptions: `floodhub/world.json` (~0.5 MB) and `narayani/storm.json` (~0.4 MB) are read only at build time; the site ships hillshade PNGs and small payloads instead.
 - Each output carries a `source` field naming the input file and the date it was processed.
 
 

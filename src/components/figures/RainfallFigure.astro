@@ -1,0 +1,124 @@
+---
+/**
+ * Fig. 7, Narayani: "What a district mean hides". Observed daily rainfall at the DHM gauges
+ * through the July 2003 storm grows on the map day by day; on the wettest day each district's
+ * gauges then collapse into the district mean, and dashed rings keep what the averaging lost.
+ * The paper's own statistics on this damping stay off the site while it is under review.
+ */
+import FigureShell from './FigureShell.astro';
+import { buildNarayani, clientPayload, W, H, rOf, STRIP, yOf } from '../../lib/narayani';
+
+const n = buildNarayani();
+const P = n.peak;
+const payload = JSON.stringify(clientPayload(n));
+const ticks = [0, 100, 200, 300, 400, 500];
+const maxIn = n.districts.map((_, i) => Math.max(0, ...n.gauges.filter((g) => g.di === i).map((g) => g.rain[P] ?? 0)));
+const wet = n.wettest;
+const shadow = n.shadow.length ? { x: n.shadow.reduce((a, d) => a + d.cx, 0) / n.shadow.length, y: Math.min(...n.shadow.map((d) => d.cy)) - 18 } : null;
+
+const description =
+  `The Narayani basin in central Nepal over a hillshade, with district boundaries and ${n.gauges.length} Department of Hydrology and Meteorology rain gauges. ` +
+  `Each circle's area grows with the rain that gauge measured, day by day from ${n.labels[0]} to ${n.labels[P]}, the wettest day of the storm at any gauge. ` +
+  'Rain falls unevenly: a few gauges on the southern hills and the inner Terai catch far more than their neighbours, and the trans-Himalayan rain shadow stays almost dry. ' +
+  'Then each district\'s gauges merge into one circle at the district mean, as a district-level dataset would report them. Dashed rings keep the gauge readings, and the strip below shows for each district, west to east, the gap between the wettest gauge and the district mean.';
+---
+
+<FigureShell
+  id="fig-rainfall"
+  number={7}
+  title="What a district mean hides"
+  caption={`Rain at each gauge through the storm of late July 2003, then the same wettest day averaged by district. The averaging flattens the peaks that matter for floods and landslides; how much it removes across the 1980–2019 record is the paper's result and stays off the site while under review.`}
+  data="DHM daily rain-gauge records (observed), via the paper's processed dataset; HydroBASINS basin; COD-AB districts; SRTM hillshade"
+  status="observed"
+  description={description}
+  class="nr"
+>
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Map of rain gauges in the Narayani basin, sized by daily rainfall, merging into district means" data-nr-map data-payload={payload}>
+    <defs><clipPath id="nr-basin"><path d={n.outline} /></clipPath></defs>
+    <path d={n.outline} class="nr-outline" />
+    <image href="/figures/narayani-hillshade.png" x={n.hill[0]} y={n.hill[1]} width={n.hill[2] - n.hill[0]} height={n.hill[3] - n.hill[1]} preserveAspectRatio="none" class="nr-hill" clip-path="url(#nr-basin)" />
+    <g data-nr-dist>
+      {n.districts.map((d) => <path d={d.d} class="nr-dist" style={`opacity:${d.fill.toFixed(3)}`} />)}
+    </g>
+    <g>{n.districts.map((d) => <path d={d.d} class="nr-dline" />)}</g>
+    <path d={n.outline} class="nr-edge" />
+    {shadow && <text class="chart-label nr-note" x={shadow.x} y={shadow.y} text-anchor="middle">rain shadow</text>}
+    <g data-nr-ghosts>
+      {n.gauges.map((g) => <circle cx={g.x} cy={g.y} r={rOf(g.rain[P] ?? 0).toFixed(2)} class="nr-ghost" />)}
+    </g>
+    <g data-nr-gauges>
+      {n.gauges.map((g) => {
+        const d = n.districts[g.di];
+        return <circle r="1" class="nr-g" transform={`translate(${d.cx} ${d.cy}) scale(${rOf(d.mean).toFixed(2)})`} />;
+      })}
+    </g>
+    <g class="nr-callout">
+      <line x1={wet.x} y1={wet.y + rOf(wet.rain[P] ?? 0)} x2={wet.x} y2={wet.y + rOf(wet.rain[P] ?? 0) + 22} />
+      <text class="chart-label" x={wet.x + 8} y={wet.y + rOf(wet.rain[P] ?? 0) + 40} text-anchor="end">{wet.name.replace(/\s*N\.F\.I\.$/, '')}, {Math.round(wet.rain[P] ?? 0)} mm</text>
+    </g>
+  </svg>
+
+  <svg class="nr-strip" viewBox={`0 0 ${STRIP.w} ${STRIP.h}`} role="img" aria-label="Rainfall at each gauge and the district mean, by district from west to east" data-nr-strip>
+    <text class="chart-label" x="0" y="14">mm / day</text>
+    {ticks.map((t) => (
+      <g>
+        <line class="chart-grid" x1={STRIP.x0} x2={STRIP.x1} y1={yOf(t)} y2={yOf(t)} />
+        <text class="chart-label" x={STRIP.x0 - 8} y={yOf(t) + 4} text-anchor="end">{t}</text>
+      </g>
+    ))}
+    {n.districts.map((d, i) => (
+      <g>
+        <line class="nr-gap" data-nr-gap={i} x1={d.col} x2={d.col} y1={yOf(d.mean)} y2={yOf(maxIn[i])} />
+        <line class="nr-mean" data-nr-mean={i} x1={d.col - 10} x2={d.col + 10} y1={yOf(d.mean)} y2={yOf(d.mean)} />
+        <text class="chart-label nr-dname" transform={`translate(${d.col + 4} ${STRIP.base + 12}) rotate(-55)`} text-anchor="end">{d.name}</text>
+      </g>
+    ))}
+    <g data-nr-sghosts>
+      {n.gauges.map((g) => <circle cx={g.sx} cy={yOf(g.rain[P] ?? 0)} r="3.5" class="nr-sghost" />)}
+    </g>
+    <g data-nr-sdots>
+      {n.gauges.map((g) => <circle r="3.5" class="nr-s" transform={`translate(${n.districts[g.di].col} ${yOf(n.districts[g.di].mean)})`} />)}
+    </g>
+  </svg>
+
+  <ul class="fig-key" aria-hidden="true">
+    <li><span class="sw nr-g-sw"></span>rain at a gauge (area: depth)</li>
+    <li><span class="sw nr-ghost-sw"></span>the gauge reading, after averaging</li>
+    <li><span class="sw nr-dist-sw"></span>district mean (darker: wetter)</li>
+    <li><span class="sw sw-line nr-gap-sw"></span>wettest gauge above the district mean</li>
+  </ul>
+</FigureShell>
+
+<style is:global>
+  .nr-outline { fill: var(--c-paper-2); stroke: none; }
+  .nr-hill { opacity: 0.5; }
+  .nr-dist { fill: var(--chart-water-hi); stroke: none; }
+  .nr-dline { fill: none; stroke: var(--chart-ink); stroke-width: 0.6; stroke-opacity: 0.35; stroke-dasharray: 3 2; }
+  .nr-edge { fill: none; stroke: var(--chart-ink); stroke-width: 1.25; }
+  .nr-g { fill: var(--chart-water-hi); fill-opacity: 0.55; stroke: var(--c-paper); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .nr-ghost { fill: none; stroke: var(--chart-ink); stroke-width: 1; stroke-dasharray: 2 2; stroke-opacity: 0.7; }
+  .nr-note { font-style: italic; }
+  .nr-callout line { stroke: var(--chart-ink); stroke-width: 1; }
+  .nr-callout text, .nr-note { paint-order: stroke; stroke: var(--c-paper); stroke-width: 4px; stroke-linejoin: round; }
+  .nr-strip { margin-top: 0.75rem; }
+  .nr-s { fill: var(--chart-water-hi); fill-opacity: 0.8; }
+  .nr-sghost { fill: none; stroke: var(--chart-ink); stroke-width: 1; stroke-opacity: 0.6; }
+  .nr-mean { stroke: var(--chart-ink); stroke-width: 2.5; }
+  .nr-gap { stroke: var(--c-accent); stroke-width: 3; stroke-linecap: round; }
+  .nr-g-sw { background: color-mix(in srgb, var(--chart-water-hi) 55%, var(--c-paper)); border-radius: 50%; }
+  .nr-ghost-sw { border: 1px dashed var(--chart-ink); border-radius: 50%; background: transparent; }
+  .nr-dist-sw { background: color-mix(in srgb, var(--chart-water-hi) 45%, var(--c-paper)); }
+  .nr-gap-sw { background: var(--c-accent); }
+  @media (max-width: 639px) {
+    .nr .chart-label { font-size: 18px; }
+    .nr .nr-dname { font-size: 13px; }
+  }
+</style>
+
+<script>
+  import { mountRainfall } from './rainfall';
+  document.addEventListener('astro:page-load', () => {
+    const fig = document.getElementById('fig-rainfall');
+    if (fig) mountRainfall(fig);
+  });
+</script>

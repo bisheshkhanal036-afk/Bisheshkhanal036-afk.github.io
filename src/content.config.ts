@@ -111,7 +111,7 @@ const projects = defineCollection({
     figures: z
       .array(
         z.object({
-          component: z.enum(['SurrogateFigure', 'IsolationFigure', 'SwipeFigure', 'TwoModelsFigure', 'LayersFigure']),
+          component: z.enum(['SurrogateFigure', 'IsolationFigure', 'SwipeFigure', 'TwoModelsFigure', 'LayersFigure', 'RainfallFigure']),
           /** Set while the figure runs on synthetic stand-in data: what real data replaces it. */
           awaiting: z.string().optional(),
         }),

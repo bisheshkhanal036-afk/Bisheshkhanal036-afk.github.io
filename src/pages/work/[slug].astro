@@ -12,8 +12,9 @@ import IsolationFigure from '../../components/figures/IsolationFigure.astro';
 import SwipeFigure from '../../components/figures/SwipeFigure.astro';
 import TwoModelsFigure from '../../components/figures/TwoModelsFigure.astro';
 import LayersFigure from '../../components/figures/LayersFigure.astro';
+import RainfallFigure from '../../components/figures/RainfallFigure.astro';
 
-const FIGURES = { SurrogateFigure, IsolationFigure, SwipeFigure, TwoModelsFigure, LayersFigure };
+const FIGURES = { SurrogateFigure, IsolationFigure, SwipeFigure, TwoModelsFigure, LayersFigure, RainfallFigure };
 
 export async function getStaticPaths() {
   const projects = await listedProjects();

@@ -9,7 +9,7 @@ import { join } from 'node:path';
 
 const base = process.argv[2] ?? 'http://localhost:4321';
 const width = Number(process.argv[3] ?? 1280);
-const pages = ['/work/hanumante-ews/', '/work/bagmati-evacuation/', '/work/kaligandaki-preprint/', '/work/floodhub/'];
+const pages = ['/work/hanumante-ews/', '/work/bagmati-evacuation/', '/work/kaligandaki-preprint/', '/work/floodhub/', '/work/narayani-precipitation/'];
 const out = join('reports', new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19) + `-fig${width}`);
 mkdirSync(out, { recursive: true });
 const errors = [];
