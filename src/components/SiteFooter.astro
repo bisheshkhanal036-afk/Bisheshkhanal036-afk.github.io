@@ -13,6 +13,7 @@ const me = (await getEntry('profile', 'me'))!.data;
       <li><a href="/cv.pdf">CV (PDF)</a></li>
     </ul>
   </div>
+  <p class="mx-auto max-w-page px-4 pb-8 sm:px-8 counts">Page views are counted with <a href="https://www.goatcounter.com/">GoatCounter</a>: no cookies, no personal data.</p>
 </footer>
 
 <style>
@@ -24,4 +25,5 @@ const me = (await getEntry('profile', 'me'))!.data;
   }
   .site-footer a { color: var(--c-ink-2); text-underline-offset: 3px; }
   .site-footer a:hover { color: var(--c-ink); }
+  .counts { font-size: var(--text-xs); margin-top: -1rem; }
 </style>

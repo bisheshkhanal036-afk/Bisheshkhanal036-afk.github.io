@@ -18,6 +18,8 @@ const { title, description, jsonLd = [], ogImage = '/og.png' } = Astro.props;
 const fullTitle = title ? `${title} · Bishesh Khanal` : 'Bishesh Khanal · Flood modelling and early warning';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogUrl = new URL(ogImage, Astro.site);
+// GoatCounter site code (https://<code>.goatcounter.com); empty string turns counting off.
+const GOATCOUNTER = 'bisheshkhanal';
 ---
 
 <!doctype html>
@@ -60,6 +62,18 @@ const ogUrl = new URL(ogImage, Astro.site);
         if (!window.__figuresReady && document.querySelector('[data-figure]')) document.documentElement.classList.remove('js');
       }, 4000);
     </script>
+    <!-- Visitor counts: GoatCounter (no cookies, no personal data). count.js counts the first
+         page itself and skips localhost; later in-site navigations are counted on page-load. -->
+    {GOATCOUNTER && <script is:inline async data-goatcounter={`https://${GOATCOUNTER}.goatcounter.com/count`} src="https://gc.zgo.at/count.js"></script>}
+    {GOATCOUNTER && <script is:inline>
+      (function () {
+        var first = true;
+        document.addEventListener('astro:page-load', function () {
+          if (first) { first = false; return; }
+          if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: location.pathname + location.search });
+        });
+      })();
+    </script>}
     <ClientRouter />
   </head>
   <body class="bg-paper text-ink min-h-dvh flex flex-col">
